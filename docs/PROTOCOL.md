@@ -102,9 +102,9 @@ The response contains the **only** copy of the secret:
 
 ```json
 {
-  "id": "8f14bb5a-…",
-  "key": "rv_8ljbGglz…",
-  "key_prefix": "8ljbGglz",
+  "id": "<api-key-id>",
+  "key": "rv_<redacted>",
+  "key_prefix": "<redacted>",
   "key_hash": "027ed890…",
   "name": "river-bulk-1",
   "created_at": "2026-10-12T10:51:19.580351Z",

@@ -49,8 +49,8 @@ Example output:
   🌊 river-bulk  ·  bulk River AI API-key minter
 
 connected to browser · minting 3 account(s), concurrency 1
-  [1/3] ✔ z2cb0obwmv54w7an@maxxspace.com · key rv_z6_ybbX… · $25 · 21.4s
-  [2/3] ✔ zsrg2lmjmv54wnhz@maxxspace.com · key rv_fXpWm42… · $25 · 21.2s
+  [1/3] ✔ z2cb…@maxxspace.com             · key rv_<redacted> · $25 · 21.4s
+  [2/3] ✔ zsrg…@maxxspace.com             · key rv_<redacted> · $25 · 21.2s
   [3/3] ✔ 9m1x…@maxxspace.com             · key rv_…        · $25 · 20.9s
 
   done · 3/3 succeeded
@@ -205,10 +205,10 @@ the same.
   "accounts": [
     {
       "status": "ok",
-      "email": "z2cb0obwmv54w7an@maxxspace.com",
+      "email": "z2cb…@maxxspace.com",
       "password": "…",
-      "apiKey": "rv_z6_ybbX…",
-      "apiKeyId": "8f14bb5a-…",
+      "apiKey": "rv_<redacted>",
+      "apiKeyId": "<api-key-id>",
       "keyName": "river-bulk-1",
       "balanceUsd": 25
     }
