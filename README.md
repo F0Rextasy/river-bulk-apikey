@@ -24,8 +24,8 @@
 - 🔑 **Bulk account + API key creation** — one River account *and* one `rv_…` key per run.
 - 🧼 **Fully isolated sessions** — every account runs in its own CDP browser context, so no cookies or `localStorage` leak between accounts.
 - 🪶 **Zero dependencies** — a hand-rolled RFC6455 WebSocket + CDP client. No `npm install`.
-- 🤖 **Real-browser sign-up** — the WorkOS AuthKit page (Cloudflare Turnstile + WorkOS Radar) is driven in a real Chrome/Chromium on your own machine or VPS.
-- 📧 **Disposable inboxes** — verification codes are read straight from [mail.tm](https://mail.tm).
+- 🤖 **Real-browser sign-up** — the hosted AuthKit page is driven in a real Chrome/Chromium on your own machine or VPS.
+- 📧 **Disposable inboxes** — the verification code is read straight from a fresh [mail.tm](https://mail.tm) inbox per account.
 - 📦 **Exports** — results written to JSON **and** CSV.
 - 🔌 **9Router connector** — expose your River keys as an OpenAI-compatible provider in [9Router](https://9router.com) in one command.
 - 🌍 **6 languages** — EN, ID, ZH, JA, ES, DE.
@@ -60,11 +60,10 @@ connected to browser · minting 3 account(s), concurrency 1
 
 ## 🧭 How it works
 
-River's Console authenticates through **WorkOS AuthKit** with **Cloudflare
-Turnstile**, so there is no scriptable signup HTTP endpoint
-(`POST /api/auth/signup` → `404 Password signup is disabled`). `river-bulk`
-therefore drives the real hosted UI in a browser and then talks to the
-console's own REST API with the captured session token:
+River's Console signs users up through a **hosted browser flow** (WorkOS AuthKit) and its own REST
+API is bearer-token based, so there is no scriptable HTTP sign-up. `river-bulk` therefore drives the
+real hosted UI in a browser, captures the session bearer token and then talks to the console's own
+API:
 
 ```
 mail.tm inbox ──▶ sign-up UI ──▶ e-mail code ──▶ console (bearer token captured)
@@ -76,6 +75,9 @@ mail.tm inbox ──▶ sign-up UI ──▶ e-mail code ──▶ console (bear
                                                       ▼
                                     https://api.river.ai/v1  (OpenAI-compatible)
 ```
+
+> **Heads-up:** River's sign-up currently asks for phone verification once it has seen a few
+> sign-ups, and the tool stops at that step when it appears — mint in small batches.
 
 Full breakdown: [`docs/PROTOCOL.md`](docs/PROTOCOL.md).
 
@@ -107,7 +109,7 @@ Then point the tool at it:
 
 > On a headless VPS, Chromium needs a few shared libraries (`libnss3`, `libatk1.0-0`,
 > `libgbm1`, `libasound2`, …). Install them via your distro's package manager if Chrome
-> exits immediately. Turnstile widgets on the sign-up page render normally in a real Chrome.
+> exits immediately.
 
 ## 🧰 CLI reference
 
@@ -142,7 +144,7 @@ const models = await listModels(account.apiKey);
 cdp.close();
 ```
 
-## 🤖 Available models
+## 🤖 Models & free tier
 
 New accounts can call these models through `https://api.river.ai/v1`
 (OpenAI-compatible). Both support text **and** image input, streaming,
@@ -154,7 +156,15 @@ reasoning, and function calling.
 | `zai-org/GLM-5.3-Flash` | $0.12 | $0.024 | $0.40 | 1,048,576 | 128K |
 
 *Prices in USD per million tokens. Reasoning tokens are billed as output.*
-Confirm at runtime with `GET https://api.river.ai/v1/models`.
+
+**What a fresh account gets:** a **$25 balance** — the tool reads `balanceUsd` for every account it
+creates and records it in the JSON/CSV export (`"balanceUsd": 25`), so the credit is visible per key
+rather than assumed.
+
+**How to get more:** the balance lives on the **account** — one account per key, and a new account is
+a new balance. `--count N` creates N accounts, each with its own `rv_…` key.
+
+Confirm the live model list and prices at runtime with `GET https://api.river.ai/v1/models`.
 
 ```bash
 curl https://api.river.ai/v1/chat/completions \
