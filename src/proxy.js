@@ -444,6 +444,14 @@ function fetchText(proxy, url, { timeoutMs = 15000, headers = {}, method = 'GET'
     const payload =
       body === undefined || body === null ? null : Buffer.isBuffer(body) ? body : Buffer.from(typeof body === 'string' ? body : JSON.stringify(body));
     const finalHeaders = { ...headers };
+    // Several gateways treat a UA-less client as anonymous (measured: 429
+    // `tier=anonymous` on vlmrun-anon, keyless pools; Cloudflare-fronted hosts
+    // challenge it too) — a false negative that burns exits. Default one, but
+    // never override a caller's own choice.
+    if (!Object.keys(finalHeaders).some((h) => h.toLowerCase() === 'user-agent')) {
+      finalHeaders['User-Agent'] =
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36';
+    }
     if (payload && !Object.keys(finalHeaders).some((h) => h.toLowerCase() === 'content-type')) {
       finalHeaders['Content-Type'] = 'application/json';
     }
