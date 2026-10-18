@@ -61,6 +61,30 @@ connected to browser · minting 3 account(s), concurrency 1
   txt  → outputs/river-accounts.txt   (3 key(s), one per line)
 ```
 
+### 🖱️ The launcher
+
+```
+╔═══════════════════════════════════════════════╗
+║                                               ║
+║  ██████╗ ██╗██╗   ██╗███████╗██████╗          ║
+║  ██╔══██╗██║██║   ██║██╔════╝██╔══██╗         ║
+║  ██████╔╝██║██║   ██║█████╗  ██████╔╝         ║
+║  ██╔══██╗██║╚██╗ ██╔╝██╔══╝  ██╔══██╗         ║
+║  ██║  ██║██║ ╚████╔╝ ███████╗██║  ██║         ║
+║  ╚═╝  ╚═╝╚═╝  ╚═══╝  ╚══════╝╚═╝  ╚═╝         ║
+║                                               ║
+║  river-bulk-apikey                            ║
+║  one account → one key, browser signup + CDP  ║
+║                                               ║
+╚═══════════════════════════════════════════════╝
+  river-bulk-apikey contributors · MIT
+```
+
+`node src/launcher.js` (or `npm start`) asks for the account count, the proxy
+list, the CDP endpoint, the output files and the inbox backend, remembers the
+answers in `launcher.config.json`, and runs the CLI with the right flags. The
+last menu item registers the minted keys with a local 9Router.
+
 ## 🧭 How it works
 
 River's Console signs users up through a **hosted browser flow** (WorkOS AuthKit)
@@ -320,6 +344,10 @@ river/deepseek-ai/DeepSeek-V4.1-Flash
 
 Point the connector at a different key to rotate accounts; the model list stays
 the same.
+
+`npm run 9router` runs the same module, and `node src/launcher.js --connect-9router`
+walks the whole key list (`outputs/river-accounts.txt`) and registers one
+connection per key — it asks for the base URL and password first.
 
 ## 📦 Output format
 

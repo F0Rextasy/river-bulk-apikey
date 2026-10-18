@@ -5,28 +5,28 @@
   "license": "MIT",
   "type": "commonjs",
   "bin": {
-    "river-bulk": "src/cli.js"
+    "river-bulk": "src/cli.js",
+    "river-bulk-launcher": "src/launcher.js"
   },
   "main": "src/river.js",
   "engines": {
     "node": ">=18"
   },
   "scripts": {
-    "start": "node src/cli.js",
+    "start": "node src/launcher.js",
+    "mint": "node src/cli.js",
     "create": "node src/cli.js --count 1",
+    "9router": "node src/connect-9router.js",
     "connect-9router": "node src/connect-9router.js"
   },
   "keywords": [
-    "river-ai",
-    "river",
     "api-key",
     "bulk",
-    "account-creator",
-    "openai-compatible",
-    "cdp",
-    "browser-automation",
-    "9router",
-    "llm"
+    "register",
+    "launcher",
+    "river-ai",
+    "river",
+    "apikey"
   ],
   "files": [
     "src",

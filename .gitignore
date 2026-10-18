@@ -9,6 +9,7 @@ proxies-*.txt
 outputs/
 accounts.json
 *.csv
+launcher.config.json
 
 # env
 .env
