@@ -30,3 +30,8 @@ Thumbs.db
 # scratch files
 m.json
 r.bin
+
+# scratch probes and artifacts from the phone-gate wave
+.probe-cf.js
+.screen-exits.js
+proxy-lab/

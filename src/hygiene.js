@@ -33,6 +33,12 @@ function advertisesHeadless(userAgent) {
   return /Headless/i.test(String(userAgent));
 }
 
+/** `RIVER_BULK_VIEWPORT=1440x900` -> device metrics override for one account. */
+function parseViewport(spec) {
+  const m = String(spec || '').match(/^(\d{3,5})\s*[x,]\s*(\d{3,5})$/);
+  return m ? { width: parseInt(m[1], 10), height: parseInt(m[2], 10) } : null;
+}
+
 const FALLBACK_UA =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36';
 
@@ -58,14 +64,27 @@ async function resolveUserAgent(cdp, supplied) {
  *
  * @param {object} cdp
  * @param {string} sessionId page session
- * @param {{userAgent?: string, acceptLanguage?: string, platform?: string, log?: Function}} opts
+ * @param {{userAgent?: string, acceptLanguage?: string, platform?: string, timezone?: string, viewport?: object, log?: Function}} opts
  */
 async function applyHygiene(cdp, sessionId, opts = {}) {
-  const { acceptLanguage = 'tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7', platform = 'Win32', log } = opts;
+  const {
+    acceptLanguage = process.env.RIVER_BULK_ACCEPT_LANGUAGE || 'tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7',
+    platform = process.env.RIVER_BULK_PLATFORM || 'Win32',
+    timezone = process.env.RIVER_BULK_TIMEZONE || null,
+    viewport = parseViewport(process.env.RIVER_BULK_VIEWPORT),
+    log,
+  } = opts;
   const userAgent = await resolveUserAgent(cdp, opts.userAgent);
   await cdp.send('Emulation.setUserAgentOverride', { userAgent, acceptLanguage, platform }, sessionId);
+  // A bulk run gives every account its own timezone and viewport, matched to
+  // the exit's country; a bare single run has neither and is left untouched.
+  if (timezone) await cdp.send('Emulation.setTimezoneOverride', { timezoneId: timezone }, sessionId).catch(() => {});
+  if (viewport)
+    await cdp
+      .send('Emulation.setDeviceMetricsOverride', { ...viewport, deviceScaleFactor: 1, mobile: false }, sessionId)
+      .catch(() => {});
   if (log) log(`browser hygiene: UA announced as "${userAgent.split(') ').pop()}"`);
-  return { userAgent };
+  return { userAgent, acceptLanguage, timezone, viewport };
 }
 
-module.exports = { applyHygiene, plainUserAgent, advertisesHeadless, resolveUserAgent, FALLBACK_UA };
+module.exports = { applyHygiene, plainUserAgent, advertisesHeadless, resolveUserAgent, parseViewport, FALLBACK_UA };

@@ -17,7 +17,8 @@
     "mint": "node src/cli.js",
     "create": "node src/cli.js --count 1",
     "9router": "node src/connect-9router.js",
-    "connect-9router": "node src/connect-9router.js"
+    "connect-9router": "node src/connect-9router.js",
+    "selftest": "node tools/fivesim-selftest.js"
   },
   "keywords": [
     "api-key",

@@ -12,9 +12,9 @@
 [![OpenAI compatible](https://img.shields.io/badge/API-OpenAI--compatible-412991.svg?style=for-the-badge&logo=openai&logoColor=white)](https://docs.river.ai/guides/inference)
 [![9Router](https://img.shields.io/badge/9Router-connector-8B5CF6.svg?style=for-the-badge)](#-connect-to-9router)
 [![Browsers](https://img.shields.io/badge/Browser-Chrome%20%2F%20Chromium-4285F4.svg?style=for-the-badge&logo=googlechrome&logoColor=white)](#-requirements-a-chrome-to-drive)
-[![Languages](https://img.shields.io/badge/i18n-5%20languages-F59E0B.svg?style=for-the-badge)](#)
+[![Languages](https://img.shields.io/badge/i18n-10%20languages-F59E0B.svg?style=for-the-badge)](#-phone-verification-sms)
 
-[English](README.md) · [Bahasa Indonesia](i18n/README.id.md) · [简体中文](i18n/README.zh.md) · [日本語](i18n/README.ja.md) · [Español](i18n/README.es.md) · [Deutsch](i18n/README.de.md)
+**English** · [Türkçe](i18n/README.tr.md) · [简体中文](i18n/README.zh.md) · [日本語](i18n/README.ja.md) · [한국어](i18n/README.ko.md) · [Español](i18n/README.es.md) · [Français](i18n/README.fr.md) · [Deutsch](i18n/README.de.md) · [Русский](i18n/README.ru.md) · [Português](i18n/README.pt.md) · [Bahasa Indonesia](i18n/README.id.md)
 
 </div>
 
@@ -27,9 +27,10 @@
 - 🪶 **Zero dependencies** — a hand-rolled RFC6455 WebSocket + CDP client. No `npm install`.
 - 🤖 **Real-browser sign-up** — the hosted AuthKit page is driven in a real Chrome/Chromium on your own machine or VPS.
 - 📧 **Disposable inboxes** — verification codes are read straight from [mail.tm](https://mail.tm).
+- 📱 **Phone gate solved** — WorkOS Radar's phone step on a private 5sim number (≈$0.07, cancel/refund wired in) or a free pooled one.
 - 📦 **Exports** — JSON, CSV, and a plain-text key list (one `rv_…` per line).
 - 🌐 **Proxy rotation** — one exit address per account: the browser *and* the API calls go through the proxy, and a dead proxy fails that account instead of leaking your IP.- 🔌 **9Router connector** — expose your River keys as an OpenAI-compatible provider in [9Router](https://9router.com) in one command.
-- 🌍 **6 languages** — EN, ID, ZH, JA, ES, DE.
+- 🌍 **11 languages** — EN, TR, ZH, JA, KO, ES, FR, DE, RU, PT, ID.
 
 ## 🚀 Quick start
 
@@ -243,6 +244,102 @@ proxy tunnel when one is in play, and never marks messages read. Gmail needs
 2-step verification for an app password; Outlook, Fastmail and a mailbox on your
 own domain work the same way. `--mail-domain` overrides which domain the aliases
 are minted on (default: the domain of `IMAP_USER`).
+
+## 📱 Phone verification (SMS)
+
+River signs users up through the hosted WorkOS AuthKit flow, whose **Radar** risk
+engine decides *per exit* whether a phone number is required. Most runs never see
+that screen; a run whose exit looks new to Radar gets a `/radar-challenge/send`
+step right after the e-mail code. When it appears it wants a **real mobile**
+number — the code arrives over Prelude (sender `Ding`, ~2 s) — and it refuses a
+number that already verified an account (`This phone number is not available.`).
+
+The number comes from a *rail*, chosen with `--sms`:
+
+| `--sms` | rail | cost | what it is |
+| --- | --- | --- | --- |
+| `herofree` (default) | HeroSMS free pool | **$0** | 2–3 shared UK/TH numbers with a 20-minute window; other people read the same inbox, so a code is a guess until the page accepts it |
+| `onlinesim` | OnlineSim free list | **$0** | shared too — measured 2026-10-19: the gate refused OnlineSim's LU line with `This phone number can't be verified.` (the virtual-number class) |
+| `fivesim` | **5sim.net** | **≈$0.07** per number | a private activation per account, code on your own order — the only rail that scales |
+| `--sms-cmd "<cmd>"` | your provider | theirs | any command that prints the code (see below) |
+
+The free pools are *testing* rails: they prove the gate is solvable and the
+plumbing works. A farm needs private numbers, and the cheapest one that
+integrates in-tree is 5sim:
+
+| provider | GB `other` | US | cheapest country | refund when no SMS | how |
+| --- | --- | --- | --- | --- | --- |
+| **5sim.net** | **$0.07** | $0.49 | Kenya $0.0795 | `cancel`, and 5sim auto-cancels after ~5 min of silence | **built in — `--sms fivesim`** |
+| Tiger SMS | $0.07 | $0.122 | Indonesia $0.03 · **NL $0.05** | instant on Cancel | sms-activate `handler_api` → `--sms-cmd` |
+| GrizzlySMS | $0.072 | $0.077 | **Indonesia $0.009** | automatic, within 20 min | `handler_api` → `--sms-cmd` |
+
+### 5sim in three steps
+
+1. **Token** — create an account at [5sim.net](https://5sim.net), top up (Visa /
+   Mastercard or crypto) and copy the API token from the profile page.
+2. **Export it** — the repo never stores the token (`outputs/` and `.env` are
+   gitignored):
+   ```bash
+   export FIVESIM_TOKEN="…"          # PowerShell: $env:FIVESIM_TOKEN="…"
+   ```
+3. **Mint** — the flow buys a number, fills the gate, reads the code off that
+   order's own inbox and then releases the order:
+   ```bash
+   # one account on a freshly bought private number
+   node src/mint-temptf.js --sms fivesim --mail temptf
+   # a batch: one number and one exit per account
+   node src/mint-bulk.js --count 3 --sms fivesim --phone-rail fivesim
+   ```
+
+The rail on its own — `--phone-rail fivesim` runs exactly this:
+
+```bash
+node src/sms.js pick --rail fivesim --country england --product other  # buys one, prints +44…
+node src/sms.js code --rail fivesim --phone +447… --timeout 150        # -> 130761
+node src/sms.js finish --rail fivesim --phone +447…                    # the number delivered its code
+node src/sms.js cancel --rail fivesim --phone +447…                    # no code → refund
+```
+
+`--country` takes 5sim's own country names (`england`, `usa`, `netherlands`, …) or
+an alias (`gb`, `uk`, `us`, `nl`, `de`, `fr`, `id`, `ke`, …); `--operator any`
+lets 5sim choose whichever operator has stock; `--max-price 0.08` refuses a pool
+that costs more than you allow. `pick` parks the order in
+`outputs/fivesim-orders.json` so the later `code` / `cancel` / `finish` process
+finds it, and a `code` run that times out cancels the order for a refund by
+itself (`--no-cancel` opts out). `--phone <E164>` pins a number instead of buying
+one — an order you already own on 5sim, or a listed number on a free rail.
+
+### Wiring your own provider: `--sms-cmd`
+
+Any rail is a *command*: it prints the code as its last non-empty stdout line and
+exits non-zero when it has none. The flow needs `--phone` with it and substitutes
+`{phone}` (E.164) and `{since}` (ISO timestamp of the submit — empty when the
+rail snapshots the inbox itself):
+
+```bash
+node src/mint-temptf.js --phone +447… \
+  --sms-cmd "node river-bulk-apikey/src/sms.js code --rail fivesim --phone {phone} --since {since}"
+node src/mint-temptf.js --phone +447… --sms-cmd "my-rail read --number {phone} --since {since}"
+```
+
+That is how Tiger SMS / GrizzlySMS (`handler_api`) or a mailbox you already own
+plugs in. Codes are read leniently — 4–8 digits, or a JSON field named
+`code` / `otp` / `smsCode` / `pin`; `src/phone.js` also accepts the same thing
+through its own `--cmd`, with the extra `{digits}` and `{waitS}` placeholders.
+
+### What it costs
+
+| accounts | 5sim GB ($0.07) | Tiger GB ($0.07) | Grizzly ID ($0.009) | free pools |
+| --- | --- | --- | --- | --- |
+| 10 | **$0.70** | $0.70 | $0.09 | $0 — shared, the code is a lottery |
+| 50 | $3.50 | $3.50 | $0.45 | — |
+| 250 | $17.50 | $17.50 | $2.25 | — |
+
+Prices move with the pools (measured 2026-10-19, `other`/generic product, the
+product this flow buys). Budget *without* the refund: an order whose SMS had
+already landed is charged even if you cancel, so `cancel` is a saving worth
+taking, not a guarantee.
+
 ## 🧰 CLI reference
 
 ```
@@ -272,6 +369,12 @@ node src/cli.js [options]
       --quiet              suppress per-account progress
   -h, --help               show help
 ```
+
+`src/cli.js` keeps the options above — the phone gate is deliberately *not* one
+of them: `--sms`, `--sms-cmd` and `--phone` belong to the mint flows in
+[📱 Phone verification (SMS)](#-phone-verification-sms) (`src/mint-temptf.js`,
+`src/mint-bulk.js`, `src/phone.js`, `src/sms.js`). A run whose exit triggers
+Radar's phone step and carries no rail stops there with a `PHONE_GATE` error.
 
 ### Library use
 
@@ -368,7 +471,7 @@ connection per key — it asks for the base URL and password first.
       "apiKeyId": "<api-key-id>",
       "keyName": "river-bulk-1",
       "balanceUsd": 25,
-      "proxy": "http://145.220.227.2:9050"
+      "proxy": "http://proxy.example.com:9050"
     }
   ]
 }
