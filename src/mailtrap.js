@@ -70,11 +70,13 @@ async function fetchWithRetry(proxy, url, options, tries = TRANSPORT_TRIES) {
  * plain-text part reads "Enter the code below in your open browser window." one
  * blank line above the code — 36 characters between the anchor word and the
  * digits once whitespace is collapsed (measured on a delivered message,
- * 2026-10-15, fixture: outputs/inbox-rail/fixture-river-email.eml). The old
- * 40-character window left four characters of slack, so one rewording on
- * River's side would stop the reader without any error to show for it.
+ * 2026-10-15; the same wording is reproduced in tools/inbox-factory.js
+ * riverShapedMessage()). The old 40-character window left four characters of
+ * slack, so one rewording on River's side would stop the reader without any
+ * error to show for it. The boundaries keep a longer run — a phone number, a
+ * timestamp-shaped token — from being cut to its first six digits.
  */
-const CODE_RE = /(?:code|kod|otp|verification)[^0-9]{0,80}(\d{6})/i;
+const CODE_RE = /(?:code|kod|otp|verification)[^0-9]{0,80}\b(\d{6})\b/i;
 
 function extractCode(text) {
   const words = String(text).replace(/\s+/g, ' ');

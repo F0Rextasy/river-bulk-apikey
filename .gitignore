@@ -8,6 +8,7 @@ proxies-*.txt
 # generated results (may contain secrets)
 outputs/
 accounts.json
+keys.txt
 *.csv
 launcher.config.json
 

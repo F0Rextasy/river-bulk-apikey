@@ -37,8 +37,9 @@
  * `cf_clearance` included) was refused with the same 403 on `GET /mailbox`,
  * `GET /messages` and `POST /mailbox`. The edge fingerprints the client, not
  * just the cookie, so the working reader is an in-page `fetch()` from the
- * cleared page (`Runtime.evaluate`), which answers 200 — see the page mode in
- * `tools/inbox-factory.js` and `outputs/inbox-rail/tempmailorg-session-evidence.json`.
+ * cleared page (`Runtime.evaluate`), which answers 200 — nothing in this repo
+ * does that: `tools/inbox-factory.js` loads the harvested session and this
+ * module reports the 403 from there.
  * This module still speaks the raw protocol and fails loudly rather than
  * pretending when the edge refuses it.
  *
@@ -55,7 +56,7 @@ const BASE = 'https://web2.temp-mail.org';
 const UA =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36';
 
-const CODE_RE = /(?:code|kod|otp|verification)[^0-9]{0,40}(\d{6})/i;
+const CODE_RE = /(?:code|kod|otp|verification)[^0-9]{0,40}\b(\d{6})\b/i;
 
 function extractCode(text) {
   const words = String(text).replace(/\s+/g, ' ');
@@ -217,7 +218,7 @@ class TempMailOrg {
   expect(res, what) {
     if (res.status === 403 && looksLikeChallenge(res.text)) {
       throw new Error(
-        `temp-mail.org ${what}: Cloudflare challenge (403) — a Node client is refused here even with a jar taken from a cleared page (measured 2026-10-15: 17 cookies incl. cf_clearance, still 403). The working reader is an in-page fetch() from the cleared page; see tools/inbox-factory.js and outputs/inbox-rail/tempmailorg-session-evidence.json`
+        `temp-mail.org ${what}: Cloudflare challenge (403) — a Node client is refused here even with a jar taken from a cleared page (measured 2026-10-15: 17 cookies incl. cf_clearance, still 403). The only reader that answers is an in-page fetch() from the cleared page, which this repo does not ship: tools/inbox-factory.js loads the harvested session and this module reports the 403 from there`
       );
     }
     if (res.status === 401) {

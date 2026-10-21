@@ -405,8 +405,8 @@ river/deepseek-ai/DeepSeek-V4.1-Flash
 同じ行が `outputs/river-accounts.csv` にも書き込まれ、生のキーのみが `outputs/river-accounts.txt` に出力されます（1 行に 1 つの `rv_…`、ヘッダーなし、パイプ処理可能）:
 
 ```
-rv_z6_ybbX…
-rv_fXpWm42…
+rv_<redacted>
+rv_<redacted>
 ```
 
 ## 📁 プロジェクト構成
@@ -419,7 +419,7 @@ river-bulk-apikey/
 ├── examples/   basic.js · inference.js
 ├── docs/       PROTOCOL.md
 ├── brand/      logo.svg · icon.svg
-└── i18n/       6 translated READMEs
+└── i18n/       10 translated READMEs
 ```
 
 ## ⚠️ 免責事項

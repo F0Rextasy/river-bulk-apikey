@@ -447,8 +447,8 @@ Aynı satırlar `outputs/river-accounts.csv` dosyasına ve yalın anahtarlar ise
 `outputs/river-accounts.txt` dosyasına yazılır — başlık olmadan, satır başına bir `rv_…`, aktarıma (pipe) hazır:
 
 ```
-rv_z6_ybbX…
-rv_fXpWm42…
+rv_<redacted>
+rv_<redacted>
 ```
 
 ## 📁 Proje yapısı
@@ -461,7 +461,7 @@ river-bulk-apikey/
 ├── examples/   basic.js · inference.js
 ├── docs/       PROTOCOL.md
 ├── brand/      logo.svg · icon.svg
-└── i18n/       6 translated READMEs
+└── i18n/       10 translated READMEs
 ```
 
 ## ⚠️ Yasal Uyarı

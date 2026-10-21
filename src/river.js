@@ -21,6 +21,7 @@
  * River inference (https://api.river.ai/v1) is OpenAI-compatible.
  */
 
+const crypto = require('crypto');
 const http = require('http');
 const https = require('https');
 const { URL } = require('url');
@@ -43,7 +44,7 @@ function randomPassword(len = 16) {
   const upper = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
   const digit = '23456789';
   const sym = '!@#$%^&*';
-  const pick = (s) => s[Math.floor(Math.random() * s.length)];
+  const pick = (s) => s[crypto.randomInt(s.length)];
   let p = pick(upper) + pick(lower) + pick(digit) + pick(sym);
   const all = lower + upper + digit + sym;
   while (p.length < len) p += pick(all);
@@ -233,7 +234,7 @@ async function provisionAccount(cdp, mail, opts = {}) {
     firstName = 'Alex',
     lastName = 'Morgan',
     password = randomPassword(16),
-    keyName = opts.keyName || `key-${Math.random().toString(36).slice(2, 8)}`,
+    keyName = opts.keyName || `key-${crypto.randomBytes(3).toString('hex')}`,
     description,
     expiresInDays,
     log = () => {},

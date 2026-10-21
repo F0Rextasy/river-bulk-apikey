@@ -49,7 +49,7 @@ class RawWebSocket extends EventEmitter {
     this.timeoutMs = timeoutMs;
     this.buffer = Buffer.alloc(0);
     this.connected = false;
-    this._queue = [];
+    this._fragments = null;
   }
 
   connect() {
@@ -109,7 +109,13 @@ class RawWebSocket extends EventEmitter {
           this.connected = true;
           this.socket = socket;
           clearTimeout(timer);
-          if (this.buffer.length) this._parse(this.buffer);
+          if (this.buffer.length) {
+            // `_parse` concatenates its chunk with this.buffer: hand the leftover
+            // over as a separate chunk or the same bytes get parsed twice.
+            const rest = this.buffer;
+            this.buffer = Buffer.alloc(0);
+            this._parse(rest);
+          }
           resolve(this);
           return;
         }
@@ -123,6 +129,7 @@ class RawWebSocket extends EventEmitter {
     while (this.buffer.length >= 2) {
       const b0 = this.buffer[0];
       const b1 = this.buffer[1];
+      const fin = (b0 & 0x80) !== 0;
       const opcode = b0 & 0x0f;
       const masked = (b1 & 0x80) !== 0;
       let len = b1 & 0x7f;
@@ -151,7 +158,15 @@ class RawWebSocket extends EventEmitter {
       this.buffer = this.buffer.slice(offset + len);
 
       if (opcode === 0x1) {
-        this.emit('message', payload.toString('utf8'));
+        if (fin) this.emit('message', payload.toString('utf8'));
+        else this._fragments = [payload]; // a CDP message split across frames
+      } else if (opcode === 0x0) {
+        if (!this._fragments) continue; // continuation without a start frame
+        this._fragments.push(payload);
+        if (fin) {
+          this.emit('message', Buffer.concat(this._fragments).toString('utf8'));
+          this._fragments = null;
+        }
       } else if (opcode === 0x8) {
         this.emit('close');
         this.socket && this.socket.end();
@@ -187,7 +202,6 @@ class CDP extends EventEmitter {
     this.opts = opts;
     this._id = 0;
     this._pending = new Map();
-    this._sessions = new Map();
     this._listeners = new Map();
     this.defaultSessionId = null;
   }
@@ -209,8 +223,9 @@ class CDP extends EventEmitter {
       return;
     }
     if (msg.id !== undefined && this._pending.has(msg.id)) {
-      const { resolve, reject } = this._pending.get(msg.id);
+      const { resolve, reject, timer } = this._pending.get(msg.id);
       this._pending.delete(msg.id);
+      clearTimeout(timer);
       if (msg.error) reject(Object.assign(new Error(msg.error.message), { data: msg.error.data, code: msg.error.code }));
       else resolve(msg.result);
       return;
@@ -229,14 +244,16 @@ class CDP extends EventEmitter {
     const payload = { id, method, params };
     if (sessionId) payload.sessionId = sessionId;
     return new Promise((resolve, reject) => {
-      this._pending.set(id, { resolve, reject });
-      this.ws.send(JSON.stringify(payload));
-      setTimeout(() => {
+      // The deadline must be cleared when the command settles: a resolved
+      // command used to hold the event loop for the full command timeout.
+      const timer = setTimeout(() => {
         if (this._pending.has(id)) {
           this._pending.delete(id);
           reject(new Error(`CDP timeout: ${method}`));
         }
       }, this.opts.commandTimeoutMs || 45000);
+      this._pending.set(id, { resolve, reject, timer });
+      this.ws.send(JSON.stringify(payload));
     });
   }
 

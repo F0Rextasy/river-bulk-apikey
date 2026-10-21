@@ -471,8 +471,8 @@ Dieselben Zeilen werden nach `outputs/river-accounts.csv` geschrieben und die re
 `outputs/river-accounts.txt` – ein `rv_…` pro Zeile, ohne Header, pipe-fähig:
 
 ```
-rv_z6_ybbX…
-rv_fXpWm42…
+rv_<redacted>
+rv_<redacted>
 ```
 
 ## 📁 Projektstruktur
@@ -485,7 +485,7 @@ river-bulk-apikey/
 ├── examples/   basic.js · inference.js
 ├── docs/       PROTOCOL.md
 ├── brand/      logo.svg · icon.svg
-└── i18n/       6 translated READMEs
+└── i18n/       10 translated READMEs
 ```
 
 ## ⚠️ Haftungsausschluss

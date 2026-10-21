@@ -430,8 +430,8 @@ river/deepseek-ai/DeepSeek-V4.1-Flash
 동일한 행 데이터가 `outputs/river-accounts.csv`에 기록되며, 헤더 없이 한 줄에 하나의 `rv_…` 키만 있는 파이프 처리에 적합한 순수 키 목록은 `outputs/river-accounts.txt`에 저장됩니다:
 
 ```
-rv_z6_ybbX…
-rv_fXpWm42…
+rv_<redacted>
+rv_<redacted>
 ```
 
 ## 📁 프로젝트 구조
@@ -444,7 +444,7 @@ river-bulk-apikey/
 ├── examples/   basic.js · inference.js
 ├── docs/       PROTOCOL.md
 ├── brand/      logo.svg · icon.svg
-└── i18n/       번역된 README 6개
+└── i18n/       번역된 README 10개
 ```
 
 ## ⚠️ 면책 조항

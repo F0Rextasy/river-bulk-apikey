@@ -8,10 +8,14 @@
 
 const https = require('https');
 const { URL } = require('url');
+const crypto = require('crypto');
 
 const API = 'https://api.mail.tm';
 
-function request(method, path, { token, body, agent, baseUrl = API } = {}) {
+/** Stall deadline for one API call — an inbox that accepts and goes quiet must not hang a batch. */
+const DEFAULT_TIMEOUT_MS = 20000;
+
+function request(method, path, { token, body, agent, baseUrl = API, timeoutMs = DEFAULT_TIMEOUT_MS } = {}) {
   return new Promise((resolve, reject) => {
     const u = new URL((baseUrl || API) + path);
     const data = body ? JSON.stringify(body) : null;
@@ -22,7 +26,7 @@ function request(method, path, { token, body, agent, baseUrl = API } = {}) {
     }
     if (token) headers.Authorization = `Bearer ${token}`;
     const req = https.request(
-      { method, agent, hostname: u.hostname, port: 443, path: u.pathname + u.search, headers },
+      { method, agent, hostname: u.hostname, port: u.port || 443, path: u.pathname + u.search, headers },
       (res) => {
         let chunks = '';
         res.on('data', (c) => (chunks += c));
@@ -37,6 +41,7 @@ function request(method, path, { token, body, agent, baseUrl = API } = {}) {
         });
       }
     );
+    req.setTimeout(timeoutMs, () => req.destroy(new Error(`mail.tm timeout after ${timeoutMs}ms`)));
     req.on('error', reject);
     if (data) req.write(data);
     req.end();
@@ -68,9 +73,9 @@ class MailTM {
 
   async createAccount({ address, password, domain } = {}) {
     const d = domain || (await this.getDomain());
-    const rand = Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+    const rand = Math.random().toString(36).slice(2, 10) + Date.now().toString(36); // the address is public, not a credential
     const addr = address || `${rand}@${d}`;
-    const pass = password || Math.random().toString(36).slice(2, 14) + 'Aa1!';
+    const pass = password || crypto.randomBytes(6).toString('hex') + 'Aa1!';
     const res = await this.request('POST', '/accounts', { body: { address: addr, password: pass } });
     if (res.status !== 201 && res.status !== 200) {
       throw new Error(`mail.tm account creation failed (${res.status}): ${JSON.stringify(res.body)}`);
@@ -122,7 +127,7 @@ class MailTM {
         const match = text.match(/\b(\d{6})\b/);
         if (match) {
           // Prefer a code that appears in a "verify" context; else first 6-digit run.
-          const ctx = text.match(/code[^0-9]{0,40}(\d{6})/i);
+          const ctx = text.match(/code[^0-9]{0,40}\b(\d{6})\b/i);
           return ctx ? ctx[1] : match[1];
         }
         seen.add(m.id);

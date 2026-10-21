@@ -58,7 +58,7 @@ function loadConfig() {
 
 function saveConfig(cfg) {
   try {
-    fs.writeFileSync(CONFIG, JSON.stringify(cfg, null, 2) + '\n');
+    fs.writeFileSync(CONFIG, JSON.stringify(cfg, null, 2) + '\n', { mode: 0o600 });
   } catch (e) {
     console.error(`  ! could not write ${path.basename(CONFIG)}: ${e.message}`);
   }

@@ -461,8 +461,8 @@ Baris yang sama ditulis ke `outputs/river-accounts.csv`, dan kunci mentah ke
 `outputs/river-accounts.txt` — satu `rv_…` per baris, tanpa header, siap untuk di-pipe:
 
 ```
-rv_z6_ybbX…
-rv_fXpWm42…
+rv_<redacted>
+rv_<redacted>
 ```
 
 ## 📁 Struktur proyek
@@ -475,7 +475,7 @@ river-bulk-apikey/
 ├── examples/   basic.js · inference.js
 ├── docs/       PROTOCOL.md
 ├── brand/      logo.svg · icon.svg
-└── i18n/       6 translated READMEs
+└── i18n/       10 translated READMEs
 ```
 
 ## ⚠️ Penafian

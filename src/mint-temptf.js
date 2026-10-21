@@ -616,8 +616,16 @@ function appendKeys(keys) {
 
 async function main() {
   const argv = process.argv.slice(2);
-  const arg = (k, d) => (argv.includes(k) ? argv[argv.indexOf(k) + 1] : d);
-  const count = parseInt(arg('--count', '1'), 10);
+  // A bare flag (or one followed by another flag) keeps its default, like src/cli.js.
+  const arg = (k, d) => {
+    const v = argv[argv.indexOf(k) + 1];
+    return argv.includes(k) && v !== undefined && !v.startsWith('--') ? v : d;
+  };
+  const int = (k, d) => {
+    const n = parseInt(arg(k, String(d)), 10);
+    return Number.isFinite(n) ? n : d;
+  };
+  const count = int('--count', 1);
   const tag = arg('--tag', 'temptf');
   const keep = argv.includes('--keep');
 
@@ -681,7 +689,7 @@ async function main() {
   // A UK number behind a UK exit is the least surprising pairing for the gate;
   // other countries are taken only when no exit of that country came back.
   const { proxy: exit, country: exitCc } = await pickExit(
-    parseInt(arg('--skip', '0'), 10) || 0,
+    int('--skip', 0),
     arg('--proxy', process.env.RIVER_EXIT_PROXY || 'http://127.0.0.1:40000'),
     { prefer: arg('--prefer-country', sms && sms.cc === '+44' ? 'GB' : null) }
   );
@@ -691,11 +699,14 @@ async function main() {
 
   // An existing CDP endpoint (RIVER_CDP) is reused as-is; otherwise the driver
   // owns a fresh headless browser and closes it on the way out.
-  const port = parseInt(arg('--port', '9351'), 10);
+  const port = int('--port', 9351);
   let wsUrl = process.env.RIVER_CDP || null;
   let owned = null;
   if (wsUrl) {
-    wsUrl = (await (await fetch(`${wsUrl}/json/version`)).json()).webSocketDebuggerUrl;
+    const info = await fetch(`${wsUrl}/json/version`, { signal: AbortSignal.timeout(10000) }).catch((e) => {
+      throw new Error(`could not reach Chrome at ${wsUrl} (${e.message})`);
+    });
+    wsUrl = (await info.json()).webSocketDebuggerUrl;
   } else {
     const proxyLine = `${exit.protocol || 'http'}://${exit.host}:${exit.port}`;
     owned = await launch({ port, proxy: proxyLine, offscreenHeaded: argv.includes('--headed'), windowSize: fp.windowSize });

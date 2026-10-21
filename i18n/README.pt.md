@@ -468,8 +468,8 @@ As mesmas linhas são gravadas em `outputs/river-accounts.csv`, e as chaves simp
 `outputs/river-accounts.txt` — uma `rv_…` por linha, sem cabeçalho, prontas para pipes:
 
 ```
-rv_z6_ybbX…
-rv_fXpWm42…
+rv_<redacted>
+rv_<redacted>
 ```
 
 ## 📁 Estrutura do projeto
@@ -482,7 +482,7 @@ river-bulk-apikey/
 ├── examples/   basic.js · inference.js
 ├── docs/       PROTOCOL.md
 ├── brand/      logo.svg · icon.svg
-└── i18n/       6 translated READMEs
+└── i18n/       10 translated READMEs
 ```
 
 ## ⚠️ Aviso legal

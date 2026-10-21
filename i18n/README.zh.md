@@ -411,8 +411,8 @@ river/deepseek-ai/DeepSeek-V4.1-Flash
 `outputs/river-accounts.txt` —— 每行一个 `rv_…`，无表头，便于管道处理：
 
 ```
-rv_z6_ybbX…
-rv_fXpWm42…
+rv_<redacted>
+rv_<redacted>
 ```
 
 ## 📁 项目结构
@@ -425,7 +425,7 @@ river-bulk-apikey/
 ├── examples/   basic.js · inference.js
 ├── docs/       PROTOCOL.md
 ├── brand/      logo.svg · icon.svg
-└── i18n/       6 translated READMEs
+└── i18n/       10 translated READMEs
 ```
 
 ## ⚠️ 免责声明

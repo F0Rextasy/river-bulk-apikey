@@ -59,6 +59,12 @@ function parseArgs(argv) {
   return args;
 }
 
+/** Numeric flag reader: a bare `--count` stores `true`, which parseInt turns into NaN. */
+function int(value, fallback) {
+  const n = parseInt(value, 10);
+  return Number.isFinite(n) ? n : fallback;
+}
+
 function banner() {
   process.stderr.write(
     '\n' +
@@ -135,18 +141,30 @@ function makeMailbox(args, proxy, log) {
 async function resolveWs(args) {
   if (args['cdp-ws']) return String(args['cdp-ws']);
   const httpUrl = args['cdp-url'] || process.env.CDP_URL;
-  if (httpUrl) {
-    const base = String(httpUrl).replace(/\/$/, '');
-    const res = await fetch(`${base}/json/version`);
-    if (!res.ok) throw new Error(`could not reach Chrome at ${base} (${res.status})`);
-    const j = await res.json();
-    return j.webSocketDebuggerUrl;
-  }
+  if (httpUrl) return wsFromHttpUrl(String(httpUrl));
   if (process.env.CDP_WS) return process.env.CDP_WS;
+  return wsFromHttpUrl('http://127.0.0.1:9222');
+}
 
-  const fallback = 'http://127.0.0.1:9222';
-  const res = await fetch(`${fallback}/json/version`);
-  const j = await res.json();
+/**
+ * `GET /json/version` on the debug endpoint. With a deadline, because a Chrome
+ * that accepts the connection and never answers hangs the run; and with the
+ * status and the body checked, because an HTML error page used to surface as a
+ * JSON syntax error instead of "could not reach Chrome".
+ */
+async function wsFromHttpUrl(httpUrl) {
+  const base = String(httpUrl).replace(/\/$/, '');
+  let res;
+  try {
+    res = await fetch(`${base}/json/version`, { signal: AbortSignal.timeout(10000) });
+  } catch (e) {
+    throw new Error(`could not reach Chrome at ${base} (${e.message})`);
+  }
+  if (!res.ok) throw new Error(`could not reach Chrome at ${base} (${res.status})`);
+  const j = await res.json().catch(() => null);
+  if (!j || !j.webSocketDebuggerUrl) {
+    throw new Error(`could not reach Chrome at ${base} (no webSocketDebuggerUrl in /json/version)`);
+  }
   return j.webSocketDebuggerUrl;
 }
 
@@ -241,7 +259,7 @@ async function resolveProxies(args, { count, quiet }) {
     log(`  proxy list: dropped ${localDropped.length} loopback/private entr(ies) — those exit from this machine's own address`);
   }
 
-  const limit = Math.max(1, parseInt(args['probe-limit'] || '200', 10));
+  const limit = Math.max(1, int(args['probe-limit'], 200));
   // `--no-probe` skips the liveness preflight only: the egress check below is
   // what keeps a transparent proxy from handing River this machine's address,
   // so it still runs unless it is turned off explicitly.
@@ -362,15 +380,17 @@ async function main() {
   const args = parseArgs(process.argv.slice(2));
   if (args.help || args.h) return usage();
 
-  const count = parseInt(args.count || args.n || '1', 10);
-  const concurrency = Math.max(1, parseInt(args.concurrency || args.c || '1', 10));
-  const outPath = args.out || 'outputs/river-accounts.json';
-  const csvPath = args.csv || outPath.replace(/\.json$/, '.csv');
+  const count = int(args.count || args.n, 1);
+  const concurrency = Math.max(1, int(args.concurrency || args.c, 1));
+  // `typeof`, because a bare `--out` / `--csv` stores `true`, which is not a path.
+  const outPath = typeof args.out === 'string' ? args.out : 'outputs/river-accounts.json';
+  const csvPath = typeof args.csv === 'string' ? args.csv : outPath.replace(/\.json$/, '.csv');
   const keyPrefix = args['key-prefix'] || 'river-bulk';
   const quiet = !!args.quiet;
 
   // Fail loudly about a secret in the checkout before doing anything else.
   if (args['imap-pass-file']) warnIfSecretInsideRepo(String(args['imap-pass-file']));
+  if (args['mailtrap-token-file']) warnIfSecretInsideRepo(String(args['mailtrap-token-file']));
   // …and about an inbox backend that does not exist, rather than letting every
   // account fail one by one on a typo.
   {
@@ -480,7 +500,7 @@ async function main() {
       error: r && r.error,
     })),
   };
-  fs.writeFileSync(outPath, JSON.stringify(payload, null, 2));
+  fs.writeFileSync(outPath, JSON.stringify(payload, null, 2), { mode: 0o600 });
 
   const csv = [
     'status,email,password,first_name,last_name,api_key,key_name,balance_usd,proxy,error',
@@ -499,12 +519,12 @@ async function main() {
       ].join(',')
     ),
   ].join('\n');
-  fs.writeFileSync(csvPath, csv);
+  fs.writeFileSync(csvPath, csv, { mode: 0o600 });
 
   // Plain-text key list: one API key per line, no headers — pipe-friendly.
   const txtPath = typeof args.txt === 'string' ? args.txt : outPath.replace(/\.json$/, '.txt');
   if (!args['no-txt']) {
-    fs.writeFileSync(txtPath, ok.length ? ok.map((a) => a.apiKey).join('\n') + '\n' : '');
+    fs.writeFileSync(txtPath, ok.length ? ok.map((a) => a.apiKey).join('\n') + '\n' : '', { mode: 0o600 });
   }
 
   console.log(`\n  done · ${ok.length}/${count} succeeded`);

@@ -479,8 +479,8 @@ river/deepseek-ai/DeepSeek-V4.1-Flash
 `outputs/river-accounts.txt` (по одному `rv_…` на строку, без заголовков, готовые к передаче через конвейер):
 
 ```
-rv_z6_ybbX…
-rv_fXpWm42…
+rv_<redacted>
+rv_<redacted>
 ```
 
 ## 📁 Структура проекта
@@ -493,7 +493,7 @@ river-bulk-apikey/
 ├── examples/   basic.js · inference.js
 ├── docs/       PROTOCOL.md
 ├── brand/      logo.svg · icon.svg
-└── i18n/       6 translated READMEs
+└── i18n/       10 translated READMEs
 ```
 
 ## ⚠️ Отказ от ответственности

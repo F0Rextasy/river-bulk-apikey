@@ -151,13 +151,20 @@ function substitute(cmd, vars) {
 }
 
 /**
- * Every rail subprocess is pinned to the local tunnel, so a rail's own HTTP
- * client cannot fall back to this box's line — the operator's rule is that no
- * run touches the open internet without an exit. Node 24 honours
- * `NODE_USE_ENV_PROXY` for the global `fetch` a rail may use.
+ * A rail subprocess gets the tunnel in its environment, so a rail's own HTTP
+ * client does not fall back to this box's line — the operator's rule is that no
+ * run touches the open internet without an exit. Node 24 is what honours
+ * `NODE_USE_ENV_PROXY` for the global `fetch`/`http` such a rail may use; on
+ * 18-23 the environment is only a hint and a rail can leave from our own
+ * address, so say so rather than pretend. The rails shipped in this repo take
+ * the proxy explicitly and are pinned on every version.
  */
 function railEnv(extra = {}) {
   const proxy = process.env.RIVER_RAIL_PROXY || 'http://127.0.0.1:40000';
+  if (Number(process.versions.node.split('.')[0]) < 24 && !process.env.RIVER_RAIL_ENV_WARNED) {
+    process.env.RIVER_RAIL_ENV_WARNED = '1';
+    process.stderr.write(`phone: Node ${process.versions.node} ignores HTTP(S)_PROXY for fetch/http — a rail child may leave from this machine's own IP\n`);
+  }
   return Object.assign({ NODE_USE_ENV_PROXY: '1', HTTPS_PROXY: proxy, HTTP_PROXY: proxy }, extra);
 }
 
@@ -276,15 +283,24 @@ async function fetchCodeViaHeroFree({ phone, timeoutMs = 170000, log = () => {} 
 async function main() {
   const argv = process.argv.slice(2);
   const sub = argv[0];
-  const arg = (k, d) => (argv.includes(k) ? argv[argv.indexOf(k) + 1] : d);
+  // A bare flag keeps its default instead of swallowing the next flag, and a
+  // non-numeric value must not become NaN (a NaN wait fires its timeout at once).
+  const arg = (k, d) => {
+    const v = argv[argv.indexOf(k) + 1];
+    return argv.includes(k) && v !== undefined && !v.startsWith('--') ? v : d;
+  };
+  const int = (k, d) => {
+    const n = parseInt(arg(k, String(d)), 10);
+    return Number.isFinite(n) ? n : d;
+  };
   try {
     if (sub === 'pick') {
       const a = await allocate({
         rail: arg('--rail', 'herofree'),
         cmd: arg('--cmd', null),
-        country: parseInt(arg('--country', '16'), 10),
+        country: int('--country', 16),
         cc: arg('--cc', null),
-        timeoutMs: parseInt(arg('--timeout', '180'), 10) * 1000,
+        timeoutMs: int('--timeout', 180) * 1000,
       });
       process.stdout.write(`${a.e164}\n`);
       return;
@@ -295,8 +311,8 @@ async function main() {
         cmd: arg('--cmd', null),
         phone: arg('--phone', null),
         since: arg('--since', null),
-        waitS: parseInt(arg('--timeout', '150'), 10),
-        timeoutMs: parseInt(arg('--timeout', '150'), 10) * 1000,
+        waitS: int('--timeout', 150),
+        timeoutMs: int('--timeout', 150) * 1000,
       });
       process.stdout.write(`${c.code}\n`);
       return;

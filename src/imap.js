@@ -18,7 +18,6 @@
  */
 
 const tls = require('tls');
-const net = require('net');
 const { openTunnel } = require('./proxy');
 
 const DEFAULT_TIMEOUT_MS = 20000;
@@ -82,10 +81,10 @@ function messageText(raw) {
   return text;
 }
 
-/** 6-digit code, preferring one sitting next to the word "code". */
+/** 6-digit code next to the word "code" — the whole run, so a longer number is not cut to six digits. */
 function extractCode(text) {
   const words = text.replace(/\s+/g, ' ');
-  const near = /(?:code|kod|otp|verification)[^0-9]{0,40}(\d{6})/i.exec(words);
+  const near = /(?:code|kod|otp|verification)[^0-9]{0,40}\b(\d{6})\b/i.exec(words);
   if (near) return near[1];
   const any = /\b(\d{6})\b/.exec(words);
   return any ? any[1] : null;
@@ -142,9 +141,18 @@ class Imap {
       if (this.pending) this.pending.reject(new Error('IMAP connection closed'));
       this.socket = null;
     });
-    await greeting;
-    this._onGreeting = null;
-    this._onGreetingReject = null;
+    try {
+      await greeting;
+    } catch (e) {
+      // A mailbox that never greets must not leave a live socket (or a socket the
+      // next command would write to) behind.
+      socket.destroy();
+      this.socket = null;
+      throw e;
+    } finally {
+      this._onGreeting = null;
+      this._onGreetingReject = null;
+    }
   }
 
   _onData(chunk) {

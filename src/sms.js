@@ -887,8 +887,32 @@ class FiveSim {
 const CONSUMER =
   /^(whatsapp|wa|telegram|tg|youtube|yt|openai|google|tiktok|instagram|facebook|amazon|netflix|microsoft|apple|discord|signal|snapchat|twitter|x|uber|bolt|binance|coinbase|paypal|revolut|wise|monzo|starling|shopee|lazada|grab|gojek|zalo|line|kakao|viber|aliexpress|alipay|wechat|steam|roblox|epic|spotify|dropbox|yahoo|outlook|hotmail|icloud|proton|dana|ovo|paytm|phonepe)$/i;
 
+/** A date or clock stamp in a body ("2026-10-21 14:33") is not a code. */
+const STAMP =
+  /\d{4}[-/.]\d{1,2}[-/.]\d{1,2}([T ]\d{1,2}:\d{2}(:\d{2})?(\.\d{1,9})?)?|\d{1,2}:\d{2}(:\d{2})?/g;
+/** Words that name the number as a code. */
+const CODE_WORD = /verif|code|kod|otp|pin|doğrulama|验证|проверочный/i;
+
 /**
- * The 4-8 digit code inside a pooled message.
+ * The code inside a rail's text. A code is a line that is nothing but 4-8
+ * digits, a 6-digit run (River's own SMS shape — measured: "130761 is your
+ * verification code"), or a run the text names as a code. A date stamp and a
+ * bare order number are not codes: reading `2026-10-21` as one submits a wrong
+ * code, the gate rejects it and the number is spent.
+ */
+function codeFrom(text) {
+  const t = String(text || '').trim();
+  if (/^\d{4,8}$/.test(t)) return t;
+  const clean = t.replace(STAMP, ' ');
+  const six = clean.match(/\b\d{6}\b/);
+  if (six) return six[0];
+  if (!CODE_WORD.test(clean)) return '';
+  const m = clean.match(/\b\d{4,8}\b/);
+  return m ? m[0] : '';
+}
+
+/**
+ * The code inside a pooled message.
  *
  * HeroSMS puts the whole message in `smsCode` for some senders (measured on the
  * gate's own "Ding" SMS: `smsCode` was "159545 is your verification code…"),
@@ -897,8 +921,7 @@ const CONSUMER =
 function codeOf(message) {
   const field = String(message.smsCode || '').trim();
   if (/^\d{4,8}$/.test(field)) return field;
-  const m = String(field).match(/\d{4,8}/) || String(message.smsText || '').match(/\d{4,8}/);
-  return m ? m[0] : '';
+  return codeFrom(field) || codeFrom(message.smsText);
 }
 
 /**
@@ -954,7 +977,16 @@ function candidates(rows) {
  * `--no-cancel` turns off.
  */
 async function cli(argv) {
-  const arg = (k, d) => (argv.includes(k) ? argv[argv.indexOf(k) + 1] : d);
+  // A bare flag must keep its default instead of swallowing the next flag, and a
+  // non-numeric value must not become NaN (a NaN deadline exits before one poll).
+  const arg = (k, d) => {
+    const v = argv[argv.indexOf(k) + 1];
+    return argv.includes(k) && v !== undefined && !v.startsWith('--') ? v : d;
+  };
+  const int = (k, d) => {
+    const n = parseInt(arg(k, String(d)), 10);
+    return Number.isFinite(n) ? n : d;
+  };
   const log = (m) => process.stderr.write(`${m}\n`);
   const cmd = argv[0];
   const rail = arg('--rail', 'herofree');
@@ -1044,7 +1076,7 @@ async function cli(argv) {
     const since = arg('--since', null);
     const seen = new Set((arg('--seen', '') || '').split(',').map((s) => s.trim()).filter(Boolean));
     if (!since && !seen.size) for (const id of await source.seenIds(info.id, info.country)) seen.add(id);
-    const deadline = Date.now() + parseInt(arg('--timeout', '150'), 10) * 1000;
+    const deadline = Date.now() + int('--timeout', 150) * 1000;
     while (Date.now() < deadline) {
       const rows = await source.otp(info.id, info.country).catch(() => []);
       const fresh = rows.filter((m) => (since ? String(m.receivedAt) > since : !seen.has(String(m.id))));

@@ -20,7 +20,7 @@
 const { fetchText } = require('./proxy');
 
 const API = 'https://api.internal.temp-mail.io/api/v3';
-const CODE_RE = /(?:code|kod|otp|verification)[^0-9]{0,40}(\d{6})/i;
+const CODE_RE = /(?:code|kod|otp|verification)[^0-9]{0,40}\b(\d{6})\b/i;
 
 function extractCode(text) {
   const words = String(text).replace(/\s+/g, ' ');

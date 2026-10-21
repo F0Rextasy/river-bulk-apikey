@@ -24,6 +24,7 @@ const { parseProxy, createAgent } = require('../src/proxy');
   }
   const url = args['cdp-url'] || process.env.CDP_URL || 'http://127.0.0.1:9222';
   const proxy = args.proxy ? parseProxy(args.proxy) : null;
+  const agent = proxy ? createAgent(proxy) : undefined;
   const ver = await (await fetch(url.replace(/\/$/, '') + '/json/version')).json();
   const wsUrl = args['cdp-ws'] || process.env.CDP_WS || ver.webSocketDebuggerUrl;
 
@@ -31,7 +32,7 @@ const { parseProxy, createAgent } = require('../src/proxy');
   await cdp.connect();
   await cdp.attachToPage();
 
-  const account = await provisionAccount(cdp, new MailTM({ agent: proxy ? createAgent(proxy) : undefined }), {
+  const account = await provisionAccount(cdp, new MailTM({ agent }), {
     keyName: 'example-key',
     log: (m) => console.error('·', m),
     proxy,
@@ -47,7 +48,7 @@ const { parseProxy, createAgent } = require('../src/proxy');
   console.log('api key :', account.apiKey);
   console.log('balance :', '$' + account.balanceUsd);
 
-  const models = await listModels(account.apiKey);
+  const models = await listModels(account.apiKey, { agent });
   console.log('models  :', models.data.map((m) => m.id).join(', '));
 })().catch((e) => {
   console.error('[fatal]', e.message);

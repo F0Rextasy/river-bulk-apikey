@@ -48,7 +48,8 @@
  * (`tools/fake-mint.js`), which is how the wrapper is exercised without
  * spending a key, a number or an account.
  *
- * Run report: `proxy-lab/out/river2/bulk-<tag>.json`, plus a heartbeat line in
+ * Run report: `proxy-lab/out/river2/bulk-<tag>.json` (a clone has no such tree
+ * beside it and writes to `outputs/river2/` instead), plus a heartbeat line in
  * `proxy-lab/out/river-farm-prep-20261019.md` at most every 10 minutes.
  */
 
@@ -58,11 +59,15 @@ const { spawn, spawnSync } = require('child_process');
 const phone = require('./phone');
 
 const SRC = __dirname;
-const OUT = path.join(SRC, '..', '..', 'proxy-lab', 'out', 'river2');
-const KEYS = path.join(SRC, '..', '..', 'providers', 'river', 'keys.txt');
+// The author's runs sit in a workspace that holds proxy-lab/ and providers/ two
+// levels above the repo; a clone has neither, so its data goes to outputs/ and
+// keys.txt inside the repo. RIVER_BULK_OUT / RIVER_KEYS_FILE override both.
+const WS = fs.existsSync(path.join(SRC, '..', '..', 'proxy-lab')) ? path.join(SRC, '..', '..') : null;
+const OUT = process.env.RIVER_BULK_OUT || (WS ? path.join(WS, 'proxy-lab', 'out', 'river2') : path.join(SRC, '..', 'outputs', 'river2'));
+const KEYS = process.env.RIVER_KEYS_FILE || (WS ? path.join(WS, 'providers', 'river', 'keys.txt') : path.join(SRC, '..', 'keys.txt'));
 const LEDGER = path.join(OUT, 'fingerprints.json');
 const NUMBERS = path.join(OUT, 'numbers.json');
-const HEARTBEAT = path.join(SRC, '..', '..', 'proxy-lab', 'out', 'river-farm-prep-20261019.md');
+const HEARTBEAT = WS ? path.join(WS, 'proxy-lab', 'out', 'river-farm-prep-20261019.md') : path.join(SRC, '..', 'outputs', 'river-farm-prep.md');
 const DEFAULT_PROXY = process.env.RIVER_EXIT_PROXY || 'http://127.0.0.1:40000';
 
 /** Realistic desktop Chromes — the headless product token is never announced. */
@@ -92,13 +97,26 @@ const GEO = {
   IN: { tz: 'Asia/Kolkata', lang: 'en-IN', langs: 'en-IN,en;q=0.9,hi;q=0.8' },
 };
 
-const arg = (argv, k, d) => (argv.includes(k) ? argv[argv.indexOf(k) + 1] : d);
+// A bare flag (or one followed by another flag) keeps its default, and a
+// non-numeric value must not become NaN: Math.min(NaN, …) runs zero accounts.
+const arg = (argv, k, d) => {
+  const v = argv[argv.indexOf(k) + 1];
+  return argv.includes(k) && v !== undefined && !v.startsWith('--') ? v : d;
+};
+const int = (argv, k, d) => {
+  const n = parseInt(arg(argv, k, String(d)), 10);
+  return Number.isFinite(n) ? n : d;
+};
 const ts = () => new Date().toISOString().replace('T', ' ').slice(0, 19);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-function readKeys() {
-  if (!fs.existsSync(KEYS)) return [];
-  return fs.readFileSync(KEYS, 'utf8').split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
+function readKeys(file = KEYS) {
+  if (!fs.existsSync(file)) {
+    // Reading a missing file as "0 keys so far" is how a run slips past the cap.
+    console.log(`  ! no keys file at ${file} — the budget counts 0 keys (set RIVER_KEYS_FILE or --keys-file)`);
+    return [];
+  }
+  return fs.readFileSync(file, 'utf8').split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
 }
 
 /** Fingerprint combos already spent, across runs. */
@@ -334,9 +352,10 @@ function save(opts, rows) {
 
 async function main() {
   const argv = process.argv.slice(2);
-  const keysBefore = readKeys();
-  const budget = parseInt(arg(argv, '--max-total', '10'), 10);
-  const want = parseInt(arg(argv, '--count', '1'), 10);
+  const keysFile = arg(argv, '--keys-file', KEYS);
+  const keysBefore = readKeys(keysFile);
+  const budget = int(argv, '--max-total', 10);
+  const want = int(argv, '--count', 1);
   const remaining = budget - keysBefore.length;
   const count = Math.max(0, Math.min(want, remaining));
 
@@ -357,10 +376,10 @@ async function main() {
     smsCmd: arg(argv, '--sms-cmd', ''),
     phoneRail: arg(argv, '--phone-rail', 'herofree'),
     proxy: arg(argv, '--proxy', DEFAULT_PROXY),
-    port: parseInt(arg(argv, '--port', '9351'), 10),
-    startAt: parseInt(arg(argv, '--start-at', '1'), 10),
-    maxStrikes: parseInt(arg(argv, '--max-strikes', '2'), 10),
-    fpRetries: parseInt(arg(argv, '--fp-retries', '3'), 10),
+    port: int(argv, '--port', 9351),
+    startAt: int(argv, '--start-at', 1),
+    maxStrikes: int(argv, '--max-strikes', 2),
+    fpRetries: int(argv, '--fp-retries', 3),
     child: arg(argv, '--child', null),
     preferCountry: arg(argv, '--exit-cc', 'auto').toUpperCase() === 'AUTO' ? null : arg(argv, '--exit-cc', '').toUpperCase(),
     allowReused: argv.includes('--allow-reused-number'),
@@ -456,7 +475,7 @@ async function main() {
     if (i + 1 < count && Date.now() - lastBeat < 9000) await sleep(2500); // breathe between accounts
   }
 
-  const keysAfter = readKeys();
+  const keysAfter = readKeys(keysFile);
   const added = keysAfter.filter((k) => !keysBefore.includes(k));
   const file = save(opts, rows);
   const ok = rows.filter((r) => r.ok).length;

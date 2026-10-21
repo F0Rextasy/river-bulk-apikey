@@ -44,7 +44,6 @@ const http = require('http');
 const path = require('path');
 const tls = require('tls');
 
-const { fetchText } = require('../src/proxy');
 const { Mailtrap, extractCode: extractMailtrap } = require('../src/mailtrap');
 const { InboxesCom, extractCode: extractInboxes } = require('../src/inboxes');
 const { TempMailIo, extractCode: extractTempmail } = require('../src/tempmailio');
@@ -542,10 +541,11 @@ function quotedPrintable(text) {
 }
 
 /**
- * The live River message, verbatim except for address and code (fixture:
- * outputs/inbox-rail/fixture-river-email.eml). Testing the extractor against the
- * real wording is the whole point — a synthetic "code: 123456" body would pass
- * while the anchor window that ships stays untested.
+ * The live River message, verbatim except for address and code (captured from a
+ * delivered mail, 2026-10-15 — no fixture file ships; this function is it).
+ * Testing the extractor against the real wording is the whole point — a
+ * synthetic "code: 123456" body would pass while the anchor window that ships
+ * stays untested.
  */
 function riverShapedMessage(to, code) {
   const text = [
@@ -798,11 +798,15 @@ function parseArgs(argv) {
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
     const value = () => argv[++i];
+    const int = (d) => {
+      const n = parseInt(value(), 10);
+      return Number.isFinite(n) ? n : d;
+    };
     if (arg === '--backend') opts.backend = value();
-    else if (arg === '--count' || arg === '-n') opts.count = parseInt(value(), 10);
+    else if (arg === '--count' || arg === '-n') opts.count = int(1);
     else if (arg === '--selftest') opts.selftest = true;
     else if (arg === '--probe') opts.probe = true;
-    else if (arg === '--timeout') opts.timeoutMs = parseInt(value(), 10);
+    else if (arg === '--timeout') opts.timeoutMs = int(READ_TIMEOUT_MS);
     else if (arg === '--quiet') opts.quiet = true;
     else if (arg === '--alias') opts.alias = true;
     else if (arg === '--alias-base') opts.aliasBase = value();

@@ -481,8 +481,8 @@ The same rows are written to `outputs/river-accounts.csv`, and the bare keys to
 `outputs/river-accounts.txt` — one `rv_…` per line, no header, pipe-ready:
 
 ```
-rv_z6_ybbX…
-rv_fXpWm42…
+rv_<redacted>
+rv_<redacted>
 ```
 
 ## 📁 Project structure
@@ -495,7 +495,7 @@ river-bulk-apikey/
 ├── examples/   basic.js · inference.js
 ├── docs/       PROTOCOL.md
 ├── brand/      logo.svg · icon.svg
-└── i18n/       6 translated READMEs
+└── i18n/       10 translated READMEs
 ```
 
 ## ⚠️ Disclaimer

@@ -8,10 +8,12 @@
  *   · SOCKS5              -> RFC 1928 + RFC 1929 username/password auth
  *   · SOCKS4/4a           -> CONNECT with SOCKS4a hostname extension
  *
- * Two consumers use this module:
+ * Consumers of this module:
  *   · Chrome, via `Target.createBrowserContext { proxyServer }`  -> `browserUrl()`
  *   · Node's https client, via `createAgent()`                    -> an https.Agent
- *     whose `createConnection()` returns a TLS socket layered on the tunnel.
+ *     whose `createConnection()` returns a TLS socket layered on the tunnel
+ *   · Node's http client, via the plain twin that `fetchText()` uses
+ *                                                                  -> a tunnel socket
  *
  * Everything here is written so a failed proxy fails the *account*, never
  * falls back to a direct connection: the whole point is that no request ever
@@ -33,6 +35,8 @@ const DEFAULT_TIMEOUT_MS = 35000;
 // full handshake budget starve the CPE for the whole fleet (measured: 651
 // sockets in SYN_SENT, mostly our own screens, while ICMP was clean).
 const DEFAULT_CONNECT_TIMEOUT_MS = 8000;
+// A proxy that never ends its CONNECT header block must not grow this buffer.
+const MAX_CONNECT_HEADER_BYTES = 16384;
 
 /** Accepted line shapes:
  *    host:port
@@ -216,7 +220,10 @@ function connectHttpProxy(proxy, { host, port, timeoutMs = DEFAULT_TIMEOUT_MS })
     const onData = (chunk) => {
       buffer = Buffer.concat([buffer, chunk]);
       const end = buffer.indexOf('\r\n\r\n');
-      if (end === -1) return;
+      if (end === -1) {
+        if (buffer.length > MAX_CONNECT_HEADER_BYTES) return fail(new Error(`proxy CONNECT header too large (${label(proxy)})`));
+        return;
+      }
       socket.removeListener('data', onData);
       clearTimeout(timer);
       const head = buffer.slice(0, end).toString('latin1');
@@ -300,6 +307,9 @@ function connectSocks5(proxy, { host, port, timeoutMs = DEFAULT_TIMEOUT_MS }) {
       if (buffer.length < 4) return;
       const rep = buffer[1];
       const atyp = buffer[3];
+      // The domain length byte is part of the frame: without it `need` is NaN,
+      // the wait below is skipped and a half header is handed back as payload.
+      if (atyp === 0x03 && buffer.length < 5) return;
       const need = atyp === 0x01 ? 10 : atyp === 0x04 ? 22 : 7 + buffer[4];
       if (buffer.length < need) return;
       if (rep !== 0x00) {
@@ -310,6 +320,9 @@ function connectSocks5(proxy, { host, port, timeoutMs = DEFAULT_TIMEOUT_MS }) {
       const rest = buffer.slice(need);
       if (settled) return;
       settled = true;
+      // Stop reading the tunnel once it is handed over, or this reader keeps
+      // eating the caller's bytes and hands back what it does not consume.
+      socket.removeListener('data', onData);
       if (rest.length) socket.unshift(rest);
       resolve(socket);
     };
@@ -385,6 +398,38 @@ function openTunnel(proxy, { host, port, timeoutMs } = {}) {
 // --------------------------------------------------------------------- agent
 
 /**
+ * Dials `proxy` and hands Node's client the socket: `secure` wraps the tunnel
+ * in TLS for an `https://` target, a plain `http://` target gets it raw.
+ */
+function proxyConnection(proxy, options, secure, callback) {
+  const host = options.host;
+  const port = Number(options.port) || (secure ? 443 : 80);
+  let tunnel = null;
+  // Connect phase and handshake phase need different budgets: a dead exit must
+  // give up its socket quickly (a 35 s connect timeout left hundreds of
+  // SYN_SENT slots open across the fleet and starved the CPE), while a live
+  // line on a flapping path may legitimately need ~30 s for TLS.
+  const connectMs = proxy.connectTimeoutMs || DEFAULT_CONNECT_TIMEOUT_MS;
+  const handshakeMs = proxy.timeoutMs || DEFAULT_TIMEOUT_MS;
+  openTunnel(proxy, { host, port, timeoutMs: connectMs })
+    .then((socket) => {
+      tunnel = socket;
+      if (!secure) return socket;
+      const tlsSocket = tls.connect({
+        socket,
+        servername: options.servername || host,
+        rejectUnauthorized: proxy.rejectUnauthorized !== false,
+      });
+      return once(tlsSocket, 'secureConnect', handshakeMs).then(() => tlsSocket);
+    })
+    .then((socket) => callback(null, socket))
+    .catch((err) => {
+      if (tunnel) tunnel.destroy();
+      callback(err);
+    });
+}
+
+/**
  * `https.Agent` whose sockets are opened through the proxy and then wrapped in
  * TLS locally, so `https.request({ agent })` transparently exits via the proxy.
  */
@@ -395,31 +440,23 @@ class ProxyAgent extends https.Agent {
   }
 
   createConnection(options, callback) {
-    const host = options.host;
-    const port = Number(options.port) || 443;
-    let tunnel = null;
-    // Connect phase and handshake phase need different budgets: a dead exit must
-    // give up its socket quickly (a 35 s connect timeout left hundreds of
-    // SYN_SENT slots open across the fleet and starved the CPE), while a live
-    // line on a flapping path may legitimately need ~30 s for TLS.
-    const connectMs = this.proxy.connectTimeoutMs || DEFAULT_CONNECT_TIMEOUT_MS;
-    const handshakeMs = this.proxy.timeoutMs || DEFAULT_TIMEOUT_MS;
-    openTunnel(this.proxy, { host, port, timeoutMs: connectMs })
-      .then((socket) => {
-        tunnel = socket;
-        if (options.secureEndpoint === false) return socket;
-        const tlsSocket = tls.connect({
-          socket,
-          servername: options.servername || host,
-          rejectUnauthorized: this.proxy.rejectUnauthorized !== false,
-        });
-        return once(tlsSocket, 'secureConnect', handshakeMs).then(() => tlsSocket);
-      })
-      .then((socket) => callback(null, socket))
-      .catch((err) => {
-        if (tunnel) tunnel.destroy();
-        callback(err);
-      });
+    proxyConnection(this.proxy, options, true, callback);
+  }
+}
+
+/**
+ * The same tunnel for `http://` targets, which need an agent whose `protocol`
+ * is `http:`: Node throws `Protocol "http:" not supported` when the request's
+ * scheme and the agent's disagree, so those URLs died before dialing.
+ */
+class ProxyHttpAgent extends http.Agent {
+  constructor(proxy, options = {}) {
+    super({ keepAlive: false, ...options });
+    this.proxy = proxy;
+  }
+
+  createConnection(options, callback) {
+    proxyConnection(this.proxy, options, false, callback);
   }
 }
 
@@ -464,7 +501,7 @@ function fetchText(proxy, url, { timeoutMs = 15000, headers = {}, method = 'GET'
         host: u.hostname,
         port: u.port || (u.protocol === 'https:' ? 443 : 80),
         path: u.pathname + u.search,
-        agent: proxy ? createAgent(proxy) : undefined,
+        agent: proxy ? (u.protocol === 'https:' ? createAgent(proxy) : new ProxyHttpAgent(proxy)) : undefined,
         headers: finalHeaders,
       },
       (res) => {
