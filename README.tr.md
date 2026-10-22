@@ -12,7 +12,7 @@
 [![OpenAI compatible](https://img.shields.io/badge/API-OpenAI--compatible-412991.svg?style=for-the-badge&logo=openai&logoColor=white)](https://docs.river.ai/guides/inference)
 [![9Router](https://img.shields.io/badge/9Router-connector-8B5CF6.svg?style=for-the-badge)](#-connect-to-9router)
 [![OmniRoute](https://img.shields.io/badge/OmniRoute-connector-8B5CF6.svg?style=for-the-badge)](#-connect-to-omniroute)
-[![Browsers](https://img.shields.io/badge/Browser-Chrome%20%2F%20Chromium-4285F4.svg?style=for-the-badge&logo=googlechrome&logoColor=white)](#-install)
+[![Browsers](https://img.shields.io/badge/Browser-Chrome%20%2F%20Chromium-4285F4.svg?style=for-the-badge&logo=googlechrome&logoColor=white)]
 [![Languages](https://img.shields.io/badge/i18n-10%20languages-F59E0B.svg?style=for-the-badge)](#-phone-verification-sms)
 
 **English** · [Türkçe](i18n/README.tr.md) · [简体中文](i18n/README.zh.md) · [日本語](i18n/README.ja.md) · [한국어](i18n/README.ko.md) · [Español](i18n/README.es.md) · [Français](i18n/README.fr.md) · [Deutsch](i18n/README.de.md) · [Русский](i18n/README.ru.md) · [Português](i18n/README.pt.md) · [Bahasa Indonesia](i18n/README.id.md)
@@ -36,7 +36,7 @@
 - 📧 **Tek kullanımlık gelen kutuları** — doğrulama kodları doğrudan [mail.tm](https://mail.tm) üzerinden okunur.
 - 📱 **Telefon kapısı çözüldü** — WorkOS Radar'ın telefon adımı, özel bir 5sim numarasında (≈$0.07, iptal/iade bağlı) veya ücretsiz bir havuz numarasında.
 - 📦 **Dışa aktarımlar** — JSON, CSV ve düz metin anahtar listesi (her satırda bir `rv_…`).
-- 🌐 **Proxy rotasyonu** — her hesap için bir çıkış adresi: hem tarayıcı *hem de* API çağrıları proxy üzerinden gider ve ölü bir proxy, IP'nizi sızdırmak yerine o hesabı başarısız kılar.- 🔌 **9Router bağlayıcısı** — River anahtarlarınızı tek bir komutla [9Router](https://9router.com) içinde OpenAI uyumlu bir sağlayıcı olarak sunun.
+- 🌐 **Proxy rotasyonu** — her hesap için bir çıkış adresi: tarayıcı *ve* API çağrıları proxy üzerinden gider ve ölü bir proxy, IP'nizi sızdırmak yerine o hesabı başarısız kılar.- 🔌 **9Router bağlayıcısı** — River anahtarlarınızı tek bir komutla [9Router](https://9router.com) içinde OpenAI uyumlu bir sağlayıcı olarak sunun.
 - 🌍 **11 dil** — EN, TR, ZH, JA, KO, ES, FR, DE, RU, PT, ID.
 
 ## 🚀 Hızlı başlangıç
@@ -88,21 +88,14 @@ connected to browser · minting 3 account(s), concurrency 1
   river-bulk-apikey contributors · MIT
 ```
 
-`node src/launcher.js` (veya `npm start`) hesap sayısını, proxy listesini, CDP
-uç noktasını, çıktı dosyalarını ve gelen kutusu arka ucunu sorar, yanıtları
-`launcher.config.json` içinde hatırlar ve CLI'yi doğru bayraklarla çalıştırır. Son
-menü öğesi, üretilen anahtarları yerel bir 9Router'a kaydeder.
+`node src/launcher.js` (veya `npm start`) hesap sayısını, proxy
+listesini, CDP uç noktasını, çıktı dosyalarını ve gelen kutusu arka ucunu sorar, yanıtları `launcher.config.json` içinde hatırlar ve CLI'yi doğru bayraklarla çalıştırır. Son menü öğesi, üretilen anahtarları yerel bir 9Router'a kaydeder.
 
 ## 🧭 Nasıl çalışır
 
-River'ın Console'u kullanıcıları **barındırılan bir tarayıcı akışı** (WorkOS AuthKit)
-üzerinden kaydeder ve kendi REST API'si bearer token tabanlıdır, bu nedenle
-betiklenebilir bir HTTP kaydı yoktur. Bu yüzden `river-bulk`, gerçek barındırılan
-arayüzü bir tarayıcıda yönlendirir, oturum bearer token'ını yakalar ve ardından
-konsolun kendi API'siyle konuşur:
+River'ın Konsolu kullanıcıları **barındırılan bir tarayıcı akışı** (WorkOS AuthKit) üzerinden kaydeder ve kendi REST API'si bearer token tabanlıdır, dolayısıyla betiklenebilir bir HTTP kaydı yoktur. Bu nedenle `river-bulk`, gerçek barındırılan arayüzü bir tarayıcıda yönlendirir, oturum bearer token'ını yakalar ve ardından konsolun kendi API'siyle konuşur:
 
-> **Dikkat:** River'ın kaydı şu anda birkaç kayıt gördükten sonra telefon doğrulaması
-> ister ve araç bu adım göründüğünde orada durur — küçük gruplar halinde üretin.
+> **Dikkat:** River'ın kaydı şu anda birkaç kayıt gördükten sonra telefon doğrulaması istiyor ve araç bu adım göründüğünde orada durur — küçük gruplar halinde üretin.
 ```
 mail.tm inbox ──▶ sign-up UI ──▶ e-mail code ──▶ console (bearer token captured)
                                                       │
@@ -114,16 +107,14 @@ mail.tm inbox ──▶ sign-up UI ──▶ e-mail code ──▶ console (bear
                                     https://api.river.ai/v1  (OpenAI-compatible)
 ```
 
-> **Dikkat:** River'ın kaydı şu anda birkaç kayıt gördükten sonra telefon doğrulaması
-> ister ve araç bu adım göründüğünde orada durur — küçük gruplar halinde üretin.
+> **Dikkat:** River'ın kaydı şu anda birkaç kayıt gördükten sonra telefon doğrulaması istiyor
+> ve araç bu adım göründüğünde orada durur — küçük gruplar halinde üretin.
 
 Tam ayrıntılar: [`docs/PROTOCOL.md`](docs/PROTOCOL.md).
 
 ## 🖥️ Gereksinimler — yönlendirilecek bir Chrome
 
-`river-bulk`, **CDP hata ayıklama portu** üzerinden erişilebilen herhangi bir
-Chrome/Chromium ile konuşur. Makineniz veya bir VPS yeterlidir — bulut hizmeti
-gerekmez.
+`river-bulk`, **CDP hata ayıklama bağlantı noktası** üzerinden erişilebilen herhangi bir Chrome/Chromium ile konuşur. Kendi makineniz veya bir VPS yeterlidir — bulut hizmeti gerekmez.
 
 ```bash
 # Linux / VPS, headless
@@ -146,32 +137,24 @@ Ardından aracı ona yönlendirin:
 | `--cdp-url` / `CDP_URL` | `http://127.0.0.1:9222` | `/json/version` otomatik olarak çözülür. **Varsayılan.** |
 | `--cdp-ws` / `CDP_WS` | `ws://host:9222/devtools/browser/<id>` | Açık WebSocket URL'si. |
 
-> Başsız bir VPS'te Chromium'un birkaç paylaşılan kütüphaneye ihtiyacı vardır (`libnss3`, `libatk1.0-0`,
-> `libgbm1`, `libasound2`, …). Chrome hemen çıkarsa bunları dağıtımınızın paket yöneticisi
-> aracılığıyla kurun.
+> Başsız bir VPS'de Chromium'un birkaç paylaşılan kütüphaneye ihtiyacı vardır (`libnss3`, `libatk1.0-0`,
+> `libgbm1`, `libasound2`, …). Chrome hemen çıkarsa bunları dağıtımınızın paket yöneticisi aracılığıyla kurun.
 
 ## 🌐 Proxy'ler
 
-Her hesap kendi çıkış adresini alır: tarayıcı bağlamı hesap başına bir proxy ile
-oluşturulur ve her konsol API çağrısı, bağımlılıksız bir CONNECT / SOCKS tüneli
-üzerinden aynı proxy'ye sabitlenir. Bir hesap asla adresleri karıştırmaz ve bozuk
-bir proxy, IP'nizi sızdırmak yerine o hesabı başarısız kılar — doğrudan bir geri
-dönüş yoktur.
+Her hesap kendi çıkış adresini alır: tarayıcı bağlamı bağlam başına bir proxy ile oluşturulur ve her konsol API çağrısı, bağımlılıksız bir CONNECT / SOCKS tüneli aracılığıyla aynı proxy'ye sabitlenir. Bir hesap asla adresleri karıştırmaz ve bozuk bir proxy, IP'nizi sızdırmak yerine o hesabı başarısız kılar — doğrudan bir geri dönüş yoktur.
 
 ### Kendi adresiniz — çıkış kontrolünün ihtiyaç duyduğu tek değer
 
-Ön kontrol, çıkış adresi *sizinki olan* herhangi bir proxy'yi eler, bu nedenle
-kontrol yalnızca o değer kadar iyidir. Maruz kalma sırasına göre artan üç kaynak:
+Ön kontrol, çıkış adresi *sizinki olan* herhangi bir proxy'yi eler, dolayısıyla kontrol yalnızca o değer kadar iyidir. Artan maruziyet sırasına göre üç kaynak:
 
 | Kaynak | Nasıl elde edilir | Bilinmesi gerekenler |
 | --- | --- | --- |
-| `--own-ip <address>` / `OWN_IP` | siz sağlarsınız | hiçbir yere bir şey gönderilmez — ancak **eski bir değer filtreyi sessizce devre dışı bırakır**, çünkü şeffaf bir proxy artık size ait olmayan bir adresle eşleşir |
-| `--own-ip auto` | yönlendirici, UPnP üzerinden (yalnızca LAN) | **taşıyıcı sınıfı NAT** arkasında işe yaramaz, burada yönlendiricinin WAN adresi internetin gördüğü adres değildir — böyle bir yanıt güvenilmek yerine reddedilir |
+| `--own-ip <address>` / `OWN_IP` | siz sağlarsınız | hiçbir yere bir şey gönderilmez — ancak **eski bir değer filtreyi sessizce devre dışı bırakır**, çünkü şeffaf bir proxy o zaman artık sizin olmayan bir adresle eşleşir |
+| `--own-ip auto` | yönlendirici, UPnP üzerinden (yalnızca LAN) | **taşıyıcı düzeyinde NAT** arkasında işe yaramaz, çünkü yönlendiricinin WAN adresi internetin gördüğü adres değildir — böyle bir yanıt güvenilmek yerine reddedilir |
 | `--allow-direct-lookup` | bu makineden bir echo hizmetine bir HTTPS isteği | her zaman günceldir ve kendisi sizin kendi adresinizden çıkan tek kaynaktır |
 
-Araç, her çalıştırmada kullandığı adresi yazdırır; `--own-ip` değerini her oturumda
-yenileyin (bu LAN'da olmayan bir telefondan yazdırın, bir sağlayıcı panelinden okuyun
-veya `--allow-direct-lookup` ile alın).
+Araç her çalıştırmada kullandığı adresi yazdırır; `--own-ip` değerini her oturumda yenileyin (bu LAN'da olmayan bir telefondan yazdırın, bir sağlayıcı panelinden okuyun veya `--allow-direct-lookup` ile alın).
 
 ```bash
 node src/cli.js --count 10 --proxies proxies.txt
@@ -191,30 +174,21 @@ socks5://10.0.0.3:1080
 | --- | --- |
 | Liste yok | Çalıştırma reddedilir. `--allow-direct`, kendi IP'nizden üretim için açık onaydır. |
 | Ön kontrol | Girişler, kayıt ana bilgisayarına *doğrulanmış* bir TLS el sıkışmasıyla yoklanır, ta ki `--count` için yeterli sayıda canlı olana kadar (`--no-probe`, `--probe-limit <n>`). TLS'i kendisi sonlandıran bir proxy, bir hesabı yakmadan önce burada reddedilir. |
-| Rotasyon | Çalışan proxy'ler sırayla, hesap başına bir tane olacak şekilde atanır. |
-| Çıkış kontrolü | Hayatta kalan her proxy'ye hangi çıkış adresini sunduğu sorulur ve **sizin kendi** adresinizle yanıt veren (şeffaf bir proxy) elenir. Kendi adresiniz `--own-ip <address>` / `OWN_IP` veya yönlendiriciden UPnP üzerinden (`--own-ip auto`, yalnızca LAN, makineden hiçbir şey çıkmaz) gelir. İkisi de yoksa çalıştırma durur — doğrudan bir echo hizmeti araması yalnızca `--allow-direct-lookup` ile gerçekleşir (`--no-verify-egress` kontrolü tamamen atlar). **Eski bir `--own-ip` bu filtreyi sessizce devre dışı bırakır**, bu nedenle ISS adresiniz değişmiş olabileceğinde yenileyin. |
-| Loopback girişleri | `127.0.0.1`, LAN ve link-local girişleri elenir — oradaki bir proxy doğrudan kendi bağlantınızdan aktarır (`--allow-local-proxies` test için bunları yeniden etkinleştirir). |
-| Kimlik doğrulamalı proxy'ler | Chrome, bir proxy URL'si içindeki `user:pass@` kısmını yok sayar, bu nedenle kimlik bilgileri bunun yerine `Fetch.handleAuthRequests` (`proxyUsername`/`proxyPassword`) aracılığıyla yanıtlanır. |
-| Kimlik bilgili SOCKS | Bir uyarıyla elenir — Chrome, SOCKS proxy'lerine kimlik doğrulayamaz. |
-| Önbellek | Hesap başına devre dışı bırakılır: Chrome'un disk önbelleği bağlamlar arasında paylaşılır, bu nedenle önbelleğe alınmış bir belge hesabın proxy'sini tamamen atlar. |
-| Kayıt | Her hesabı üreten proxy, JSON/CSV `proxy` alanına yazılır. |
+| Rotasyon | Çalışan proxy'ler sırayla, her hesaba bir tane olacak şekilde atanır. |
+| Çıkış kontrolü | Hayatta kalan her proxy'ye hangi çıkış adresini sunduğu sorulur ve **sizin kendi** adresinizle yanıt veren (şeffaf bir proxy) elenir. Kendi adresiniz `--own-ip <address>` / `OWN_IP` veya yönlendiriciden UPnP üzerinden (`--own-ip auto`, yalnızca LAN, makineden hiçbir şey çıkmaz) gelir. İkisi de yoksa çalıştırma durur — doğrudan bir echo hizmeti araması yalnızca `--allow-direct-lookup` ile gerçekleşir (`--no-verify-egress` kontrolü tamamen atlar). **Eski bir `--own-ip` bu filtreyi sessizce devre dışı bırakır**, bu yüzden ISS adresiniz değişmiş olabileceğinde yenileyin. |
+| Loopback girişleri | `127.0.0.1`, LAN ve link-local girişleri elenir — oradaki bir proxy doğrudan kendi bağlantınızdan dışarı aktarır (`--allow-local-proxies` bunları test için yeniden etkinleştirir). |
+| Kimlik doğrulamalı proxy'ler | Chrome bir proxy URL'si içindeki `user:pass@` kısmını yok sayar, bu nedenle kimlik bilgileri bunun yerine `Fetch.handleAuthRequests` (`proxyUsername`/`proxyPassword`) aracılığıyla yanıtlanır. |
+| Kimlik bilgili SOCKS | Bir uyarıyla elenir — Chrome SOCKS proxy'lerine kimlik doğrulayamaz. |
+| Önbellek | Hesap başına devre dışı bırakılır: Chrome'un disk önbelleği bağlamlar arasında paylaşılır, bu nedenle önbelleğe alınmış bir belge hesabın proxy'sini tamamen atlardı. |
+| Kaydedilen | Her hesabı üreten proxy, JSON/CSV `proxy` alanına yazılır. |
 
-### Ücretsiz bir proxy listesi gerçekte ne kadar değerli
+### Ücretsiz bir proxy listesi gerçekte neye değer
 
-Ücretsiz listeler değişkendir — dakikalar sonra farklı bir hayatta kalanlar kümesi
-bekleyin — ve hayatta kalanların başkasının ele geçirilmiş yönlendiricisi olmasını
-bekleyin: bağımsız ölçüm, çalışan ücretsiz proxy'lerin ~%10'unu TLS müdahalesi
-dahil olmak üzere açıkça kötü niyetli olarak gösteriyor ([NDSS'24 açık proxy çalışması](https://arxiv.org/html/2403.02445v1)).
-Bir proxy, üzerinden gönderilen her şeyi görür — bu aracın yakaladığı bearer token
-dahil. Yerleşik ön kontrol kasıtlı olarak katıdır; önemsediğiniz her şey için ücretli
-veya kendi barındırdığınız bir çıkış daha güvenli seçimdir.
+Ücretsiz listeler değişkendir — dakikalar sonra farklı bir hayatta kalanlar kümesi bekleyin — ve hayatta kalanların başkasının ele geçirilmiş yönlendiricisi olmasını bekleyin: bağımsız ölçüm, çalışan ücretsiz proxy'lerin ~%10'unu TLS müdahalesi dahil olmak üzere açıkça kötü niyetli olarak gösteriyor ([NDSS'24 açık proxy çalışması](https://arxiv.org/html/2403.02445v1)). Bir proxy, üzerinden gönderilen her şeyi görür — bu aracın yakaladığı bearer token dahil. Yerleşik ön kontrol kasıtlı olarak katıdır; önemsediğiniz her şey için ücretli veya kendi barındırdığınız bir çıkış daha güvenli seçimdir.
 
 ## 📬 Posta kutuları
 
-Kayıt, bilinen tek kullanımlık gelen kutusu alan adlarını reddeder, bu nedenle
-kabul ettiği bir alan adına sahip bir arka uç seçin — **`mailtrap` bugün baştan sona
-üretim yapan tek arka uçtur** ve zaten sahip olduğunuz bir posta kutusuyla `imap`
-de çalışır.
+Kayıt, bilinen tek kullanımlık gelen kutusu alan adlarını reddeder, bu nedenle alan adını kabul ettiği bir arka uç seçin — **`mailtrap` bugün baştan sona üretim yapan tek arka uçtur** ve zaten sahip olduğunuz bir posta kutusuyla `imap` de çalışır.
 
 | `--mailbox` | Gelen kutusu | Gereksinimler |
 | --- | --- | --- |
@@ -223,11 +197,10 @@ de çalışır.
 | `guerrilla` | Guerrilla Mail (`api.guerrillamail.com`) | hiçbir şey |
 | `inboxes` | Inboxes.com — genel bir JSON API üzerinde on sekiz alan adı | hiçbir şey |
 | `tempmailio` | temp-mail.io — dönen bir alan adı havuzu, JSON API | hiçbir şey |
-| `tempmailorg` | temp-mail.org — dönen bir alan adı havuzu | **başsız olmayan** bir tarayıcıdan alınan bir API oturumu (arka uç olmadan yüksek sesle başarısız olur) |
+| `tempmailorg` | temp-mail.org — dönen bir alan adı havuzu | **başsız olmayan** bir tarayıcıdan alınan bir API oturumu (arka uç bunsuz yüksek sesle başarısız olur) |
 | `mailtrap` | **Mailtrap Inbound — `inbound-mailtrap.io` üzerinde hesap başına bir taze gelen kutusu** | bir Mailtrap API token'ı (`MAILTRAP_TOKEN`, `--mailtrap-token-file` veya `%USERPROFILE%\.river-mailtrap-token`) |
 
-`--mail-domain <domain>`, arka ucu havuz tam olarak o alan adını verene kadar
-adres üretmeye zorlar.
+`--mail-domain <domain>`, arka ucu havuz tam olarak o alan adını verene kadar adres üretmeye zorlar.
 
 ```bash
 # one account through a fresh mailbox; add --allow-direct to run from your own IP
@@ -244,56 +217,42 @@ node src/cli.js --count 1 --allow-direct \
 # or export IMAP_USER / IMAP_PASS / IMAP_HOST (default imap.gmail.com)
 ```
 
-`--mailbox imap`, parola dosyası depo içinde bulunduğunda uyarır ve `.gitignore`
-zaten `.river-imap-pass`, `*-imap-pass` ve `outputs/` dosyalarını kapsar —
-dışa aktarılan anahtarlar `outputs/` içine düşer ve asla commit edilmemelidir.
+`--mailbox imap`, parola dosyası depo içinde olduğunda uyarır ve `.gitignore` zaten `.river-imap-pass`, `*-imap-pass` ve `outputs/` dosyalarını kapsar — dışa aktarılan anahtarlar `outputs/` içine düşer ve asla commit edilmemelidir.
 
-IMAP istemcisi (`src/imap.js`) bağımlılıksızdır, bir proxy tüneli devrede olduğunda
-hesabın proxy tüneli üzerinden konuşur ve mesajları asla okundu olarak işaretlemez.
-Gmail, bir uygulama parolası için 2 adımlı doğrulama gerektirir; Outlook, Fastmail
-ve kendi alan adınızdaki bir posta kutusu da aynı şekilde çalışır. `--mail-domain`,
-takma adların hangi alan adında üretileceğini geçersiz kılar (varsayılan: `IMAP_USER`
-alan adı).
+IMAP istemcisi (`src/imap.js`) bağımlılıksızdır, söz konusu olduğunda hesabın proxy tüneli üzerinden konuşur ve mesajları asla okundu olarak işaretlemez. Gmail, bir uygulama parolası için 2 adımlı doğrulama gerektirir; Outlook, Fastmail ve kendi alan adınızdaki bir posta kutusu da aynı şekilde çalışır. `--mail-domain`, takma adların hangi alan adında üretileceğini geçersiz kılar (varsayılan: `IMAP_USER` alan adı).
 
 ## 📱 Telefon doğrulaması (SMS)
 
-River, kullanıcıları barındırılan WorkOS AuthKit akışı üzerinden kaydeder; bunun
-**Radar** risk motoru *çıkış başına* bir telefon numarasının gerekli olup olmadığına
-karar verir. Çoğu çalıştırma bu ekranı hiç görmez; çıkışı Radar için yeni görünen
-bir çalıştırma, e-posta kodundan hemen sonra bir `/radar-challenge/send` adımı alır.
-Göründüğünde **gerçek bir mobil** numara ister — kod Prelude üzerinden gelir
-(gönderen `Ding`, ~2 sn) — ve zaten bir hesabı doğrulamış bir numarayı reddeder
-(`This phone number is not available.`).
+River, kullanıcıları barındırılan WorkOS AuthKit akışı üzerinden kaydeder; bunun **Radar** risk motoru *çıkış başına* bir telefon numarasının gerekli olup olmadığına karar verir. Çoğu çalıştırma bu ekranı hiç görmez; çıkışı Radar için yeni görünen bir çalıştırma, e-posta kodundan hemen sonra bir `/radar-challenge/send` adımı alır. Göründüğünde **gerçek bir mobil** numara ister — kod Prelude üzerinden gelir (gönderen `Ding`, ~2 sn) — ve zaten bir hesabı doğrulamış bir numarayı reddeder (`This phone number is not available.`).
 
-Numara, `--sms` ile seçilen bir *hat*tan gelir:
+Numara, `--sms` ile seçilen bir *ray*'dan gelir:
 
-| `--sms` | hat | maliyet | nedir |
+| `--sms` | ray | maliyet | nedir |
 | --- | --- | --- | --- |
-| `herofree` (varsayılan) | HeroSMS ücretsiz havuzu | **$0** | 20 dakikalık pencereli 2–3 paylaşılan UK/TH numarası; başkaları da aynı gelen kutusunu okur, bu nedenle sayfa kabul edene kadar kod bir tahmindir |
-| `onlinesim` | OnlineSim ücretsiz listesi | **$0** | o da paylaşılan — 2026-10-19'da ölçüldü: kapı, OnlineSim'in LU hattını `This phone number can't be verified.` (sanal numara sınıfı) ile reddetti |
-| `fivesim` | **5sim.net** | numara başına **≈$0.07** | hesap başına özel bir aktivasyon, kod kendi siparişinizde — ölçeklenen tek hat |
-| `--sms-cmd "<cmd>"` | sağlayıcınız | onlarınki | kodu yazdıran herhangi bir komut (aşağıya bakın) |
+| `herofree` (varsayılan) | HeroSMS ücretsiz havuzu | **$0** | 20 dakikalık pencereli 2–3 paylaşılan UK/TH numarası; başkaları da aynı gelen kutusunu okur, bu yüzden sayfa kabul edene kadar kod bir tahmindir |
+| `onlinesim` | OnlineSim ücretsiz listesi | **$0** | o da paylaşılan — 2026-10-19'da ölçüldü: kapı, OnlineSim'in LU hattını `This phone number can't be verified.` ile reddetti (sanal numara sınıfı) |
+| `fivesim` | **5sim.net** | numara başına **≈$0.07** | hesap başına özel bir aktivasyon, kod kendi siparişinizde — ölçeklenen tek ray |
+| `--sms-cmd "<cmd>"` | sizin sağlayıcınız | onlarınki | kodu yazdıran herhangi bir komut (aşağıya bakın) |
 
-Ücretsiz havuzlar *test* hatlarıdır: kapının çözülebilir olduğunu ve tesisatın
-çalıştığını kanıtlarlar. Bir çiftlik özel numaralara ihtiyaç duyar ve ağaç içinde
-entegre olan en ucuzu 5sim'dir:
+Ücretsiz havuzlar *test* raylarıdır: kapının çözülebilir olduğunu ve tesisatın çalıştığını kanıtlarlar. Bir çiftlik özel numaralara ihtiyaç duyar ve depo içinde entegre olan en ucuz olan 5sim'dir:
 
 | sağlayıcı | GB `other` | US | en ucuz ülke | SMS yoksa iade | nasıl |
 | --- | --- | --- | --- | --- | --- |
 | **5sim.net** | **$0.07** | $0.49 | Kenya $0.0795 | `cancel`, ve 5sim ~5 dk sessizlikten sonra otomatik iptal eder | **yerleşik — `--sms fivesim`** |
-| Tiger SMS | $0.07 | $0.122 | Endonezya $0.03 · **NL $0.05** | Cancel üzerine anında | sms-activate `handler_api` → `--sms-cmd` |
+| Tiger SMS | $0.07 | $0.122 | Endonezya $0.03 · **NL $0.05** | Cancel'da anında | sms-activate `handler_api` → `--sms-cmd` |
 | GrizzlySMS | $0.072 | $0.077 | **Endonezya $0.009** | otomatik, 20 dk içinde | `handler_api` → `--sms-cmd` |
 
 ### 5sim üç adımda
 
-1. **Token** — [5sim.net](https://5sim.net) adresinde bir hesap oluşturun, bakiye
-   yükleyin (Visa / Mastercard veya kripto) ve profil sayfasından API token'ını kopyalayın.
-2. **Dışa aktarın** — depo token'ı asla saklamaz (`outputs/` ve `.env` gitignore'da):
+1. **Token** — [5sim.net](https://5sim.net) adresinde bir hesap oluşturun, bakiye yükleyin (Visa /
+   Mastercard veya kripto) ve profil sayfasından API token'ını kopyalayın.
+2. **Dışa aktarın** — depo token'ı asla saklamaz (`outputs/` ve `.env`
+   gitignore'lanmıştır):
    ```bash
    export FIVESIM_TOKEN="…"          # PowerShell: $env:FIVESIM_TOKEN="…"
    ```
-3. **Üretin** — akış bir numara satın alır, kapıyı doldurur, kodu o siparişin kendi
-   gelen kutusundan okur ve ardından siparişi serbest bırakır:
+3. **Üretin** — akış bir numara satın alır, kapıyı doldurur, kodu o
+   siparişin kendi gelen kutusundan okur ve ardından siparişi serbest bırakır:
    ```bash
    # one account on a freshly bought private number
    node src/mint-temptf.js --sms fivesim --mail temptf
@@ -301,7 +260,7 @@ entegre olan en ucuzu 5sim'dir:
    node src/mint-bulk.js --count 3 --sms fivesim --phone-rail fivesim
    ```
 
-Hattın kendisi — `--phone-rail fivesim` tam olarak bunu çalıştırır:
+Ray tek başına — `--phone-rail fivesim` tam olarak şunu çalıştırır:
 
 ```bash
 node src/sms.js pick --rail fivesim --country england --product other  # buys one, prints +44…
@@ -312,19 +271,18 @@ node src/sms.js cancel --rail fivesim --phone +447…                    # no co
 
 `--country`, 5sim'in kendi ülke adlarını (`england`, `usa`, `netherlands`, …) veya
 bir takma adı (`gb`, `uk`, `us`, `nl`, `de`, `fr`, `id`, `ke`, …) alır; `--operator any`
-5sim'in stokta olan operatörü seçmesine izin verir; `--max-price 0.08`, izin
-verdiğinizden daha pahalı bir havuzu reddeder. `pick`, siparişi
-`outputs/fivesim-orders.json` içine park eder, böylece sonraki `code` / `cancel` /
-`finish` süreci onu bulur ve zaman aşımına uğrayan bir `code` çalıştırması, iade
-için siparişi kendiliğinden iptal eder (`--no-cancel` bunu devre dışı bırakır).
-`--phone <E164>` bir numara satın almak yerine onu sabitler — 5sim'de zaten sahip
-olduğunuz bir sipariş veya ücretsiz bir hatta listelenmiş bir numara.
+5sim'in stokta olan operatörü seçmesine izin verir; `--max-price 0.08`, izin verdiğinizden
+daha pahalıya mal olan bir havuzu reddeder. `pick`, siparişi
+`outputs/fivesim-orders.json` içine park eder, böylece sonraki `code` / `cancel` / `finish` süreci
+onu bulur ve zaman aşımına uğrayan bir `code` çalıştırması, siparişi kendiliğinden iade için iptal eder
+(`--no-cancel` bundan vazgeçer). `--phone <E164>` bir numara satın almak yerine onu sabitler
+— 5sim'de zaten sahip olduğunuz bir sipariş veya ücretsiz bir rayda listelenmiş bir numara.
 
 ### Kendi sağlayıcınızı bağlama: `--sms-cmd`
 
-Her hat bir *komuttur*: kodu son boş olmayan stdout satırı olarak yazdırır ve kodu
-yoksa sıfırdan farklı çıkış yapar. Akış, onunla birlikte `--phone` gerektirir ve
-`{phone}` (E.164) ile `{since}` (gönderimin ISO zaman damgası — hat gelen kutusunu
+Herhangi bir ray bir *komuttur*: kodu son boş olmayan stdout satırı olarak yazdırır ve
+elinde yoksa sıfırdan farklı bir kodla çıkar. Akış bununla birlikte `--phone` gerektirir ve
+`{phone}` (E.164) ve `{since}` (gönderimin ISO zaman damgası — ray gelen kutusunu
 kendisi anlık görüntülediğinde boş) yer tutucularını değiştirir:
 
 ```bash
@@ -333,10 +291,10 @@ node src/mint-temptf.js --phone +447… \
 node src/mint-temptf.js --phone +447… --sms-cmd "my-rail read --number {phone} --since {since}"
 ```
 
-Tiger SMS / GrizzlySMS (`handler_api`) veya zaten sahip olduğunuz bir posta kutusu
-bu şekilde bağlanır. Kodlar hoşgörülü okunur — 4–8 hane veya `code` / `otp` /
-`smsCode` / `pin` adlı bir JSON alanı; `src/phone.js` aynı şeyi kendi `--cmd`'si
-aracılığıyla, ek `{digits}` ve `{waitS}` yer tutucularıyla da kabul eder.
+Tiger SMS / GrizzlySMS (`handler_api`) veya zaten sahip olduğunuz bir posta kutusu bu şekilde
+bağlanır. Kodlar hoşgörülü okunur — 4–8 hane veya `code` / `otp` / `smsCode` / `pin`
+adlı bir JSON alanı; `src/phone.js` de aynı şeyi kendi `--cmd`'si aracılığıyla kabul eder,
+ek `{digits}` ve `{waitS}` yer tutucularıyla.
 
 ### Maliyeti nedir
 
@@ -346,10 +304,10 @@ aracılığıyla, ek `{digits}` ve `{waitS}` yer tutucularıyla da kabul eder.
 | 50 | $3.50 | $3.50 | $0.45 | — |
 | 250 | $17.50 | $17.50 | $2.25 | — |
 
-Fiyatlar havuzlarla birlikte hareket eder (2026-10-19'da ölçüldü, `other`/genel
-ürün, bu akışın satın aldığı ürün). Bütçeyi iade *olmadan* yapın: SMS'i zaten
-inmiş bir sipariş, iptal etseniz bile ücretlendirilir, bu nedenle `cancel` alınmaya
-değer bir tasarruftur, bir garanti değil.
+Fiyatlar havuzlarla birlikte hareket eder (2026-10-19'da ölçüldü, `other`/genel ürün, bu
+akışın satın aldığı ürün). Bütçeyi iade *olmadan* yapın: SMS'i zaten gelmiş bir sipariş,
+iptal etseniz bile ücretlendirilir, bu yüzden `cancel` alınmaya değer bir tasarruftur,
+bir garanti değil.
 
 ## 🧰 CLI referansı
 
@@ -382,10 +340,10 @@ node src/cli.js [options]
 ```
 
 `src/cli.js` yukarıdaki seçenekleri korur — telefon kapısı kasıtlı olarak bunlardan
-biri *değildir*: `--sms`, `--sms-cmd` ve `--phone`, [📱 Telefon doğrulaması (SMS)](#-phone-verification-sms)
-bölümündeki üretim akışlarına aittir (`src/mint-temptf.js`, `src/mint-bulk.js`,
-`src/phone.js`, `src/sms.js`). Çıkışı Radar'ın telefon adımını tetikleyen ve hiçbir
-hat taşımayan bir çalıştırma, orada bir `PHONE_GATE` hatasıyla durur.
+*biri değildir*: `--sms`, `--sms-cmd` ve `--phone`,
+[📱 Telefon doğrulaması (SMS)](#-phone-verification-sms) bölümündeki üretim akışlarına aittir (`src/mint-temptf.js`,
+`src/mint-bulk.js`, `src/phone.js`, `src/sms.js`). Çıkışı Radar'ın telefon adımını tetikleyen ve
+hiçbir ray taşımayan bir çalıştırma, orada bir `PHONE_GATE` hatasıyla durur.
 
 ### Kütüphane kullanımı
 
@@ -409,13 +367,13 @@ const models = await listModels(account.apiKey);
 cdp.close();
 ```
 
-`provisionAccount`, tıpkı CLI gibi, `proxy` olmadan hata verir: makinenin kendi
-adresinden kaydolmak isteyen bir çağıran `allowDirect: true` demelidir.
+`provisionAccount`, tıpkı CLI gibi bir `proxy` olmadan hata fırlatır: makinenin kendi adresinden
+kaydolmak isteyen bir çağıran `allowDirect: true` demek zorundadır.
 ## 🤖 Modeller ve ücretsiz katman
 
 Yeni hesaplar bu modelleri `https://api.river.ai/v1` üzerinden çağırabilir
-(OpenAI uyumlu). Her ikisi de metin **ve** görüntü girişini, akışı, akıl yürütmeyi
-ve fonksiyon çağrısını destekler.
+(OpenAI uyumlu). Her ikisi de metin **ve** görüntü girişini, akışı,
+akıl yürütmeyi ve fonksiyon çağrısını destekler.
 
 | Model Kimliği | Giriş | Önbelleğe alınmış giriş | Çıkış | Bağlam | Maks çıkış |
 | --- | ---: | ---: | ---: | ---: | ---: |
@@ -424,13 +382,12 @@ ve fonksiyon çağrısını destekler.
 
 *Fiyatlar milyon token başına USD cinsindendir. Akıl yürütme token'ları çıkış olarak faturalandırılır.*
 
-**Taze bir hesabın aldığı:** **$25 bakiye** — araç, oluşturduğu her hesap için
-`balanceUsd` değerini okur ve JSON/CSV dışa aktarımına kaydeder (`"balanceUsd": 25`),
-böylece kredi varsayılmak yerine anahtar başına görünür olur.
+**Yeni bir hesabın aldığı:** bir **$25 bakiye** — araç, oluşturduğu her hesap için `balanceUsd` değerini
+okur ve JSON/CSV dışa aktarımına kaydeder (`"balanceUsd": 25`), böylece kredi varsayılmak yerine
+anahtar başına görünür olur.
 
-**Daha fazlası nasıl alınır:** bakiye **hesapta** yaşar — anahtar başına bir hesap
-ve yeni bir hesap yeni bir bakiyedir. `--count N`, her biri kendi `rv_…` anahtarına
-sahip N hesap oluşturur.
+**Daha fazlasını nasıl alırsınız:** bakiye **hesapta** yaşar — anahtar başına bir hesap ve yeni bir hesap
+yeni bir bakiyedir. `--count N`, her biri kendi `rv_…` anahtarına sahip N hesap oluşturur.
 
 Canlı model listesini ve fiyatları çalışma zamanında `GET https://api.river.ai/v1/models` ile doğrulayın.
 
@@ -442,7 +399,7 @@ curl https://api.river.ai/v1/chat/completions \
 
 ## 🔌 9Router'a bağlanma
 
-River OpenAI uyumludur, bu nedenle bir kez kaydedin ve her anahtarı kullanın:
+River OpenAI uyumludur, bu yüzden bir kez kaydedin ve her anahtarı kullanın:
 
 ```bash
 node src/connect-9router.js \
@@ -457,16 +414,16 @@ river/zai-org/GLM-5.3-Flash
 river/deepseek-ai/DeepSeek-V4.1-Flash
 ```
 
-Bağlayıcıyı hesapları döndürmek için farklı bir anahtara yönlendirin; model listesi
+Hesapları döndürmek için bağlayıcıyı farklı bir anahtara yönlendirin; model listesi
 aynı kalır.
 
 `npm run 9router` aynı modülü çalıştırır ve `node src/launcher.js --connect-9router`
-tüm anahtar listesini (`outputs/river-accounts.txt`) gezer ve anahtar başına bir
+tüm anahtar listesini (`outputs/river-accounts.txt`) dolaşır ve anahtar başına bir
 bağlantı kaydeder — önce temel URL'yi ve parolayı sorar.
 
 ## 🔌 OmniRoute'a bağlanma
 
-River OpenAI uyumludur, bu nedenle bir kez kaydedin ve her anahtarı kullanın:
+River OpenAI uyumludur, bu yüzden bir kez kaydedin ve her anahtarı kullanın:
 
 ```bash
 node src/connect-omniroute.js \
@@ -481,11 +438,11 @@ river/zai-org/GLM-5.3-Flash
 river/deepseek-ai/DeepSeek-V4.1-Flash
 ```
 
-Bağlayıcıyı hesapları döndürmek için farklı bir anahtara yönlendirin; model listesi
+Hesapları döndürmek için bağlayıcıyı farklı bir anahtara yönlendirin; model listesi
 aynı kalır.
 
 `npm run omniroute` aynı modülü çalıştırır ve `node src/launcher.js --connect-omniroute`
-tüm anahtar listesini (`outputs/river-accounts.txt`) gezer ve anahtar başına bir
+tüm anahtar listesini (`outputs/river-accounts.txt`) dolaşır ve anahtar başına bir
 bağlantı kaydeder — önce temel URL'yi ve parolayı sorar.
 ## 📦 Çıktı formatı
 
@@ -513,8 +470,7 @@ bağlantı kaydeder — önce temel URL'yi ve parolayı sorar.
 ```
 
 Aynı satırlar `outputs/river-accounts.csv` dosyasına ve çıplak anahtarlar
-`outputs/river-accounts.txt` dosyasına yazılır — her satırda bir `rv_…`, başlık yok,
-pipe'a hazır:
+`outputs/river-accounts.txt` dosyasına yazılır — her satırda bir `rv_…`, başlık yok, pipe'a hazır:
 
 ```
 rv_<redacted>
@@ -536,10 +492,10 @@ river-bulk-apikey/
 
 ## ⚠️ Yasal uyarı
 
-Bu proje **eğitim ve araştırma amaçlıdır**. Hesap oluşturmayı otomatikleştirmek bir
-sağlayıcının Hizmet Şartlarını ihlal edebilir. Onu nasıl kullandığınızdan ve geçerli
-tüm şartlara ve yasalara uymaktan siz sorumlusunuz. Yazarlar kötüye kullanım için
-hiçbir sorumluluk kabul etmez.
+Bu proje **eğitim ve araştırma amaçlıdır**. Hesap oluşturmayı otomatikleştirmek
+bir sağlayıcının Hizmet Şartlarını ihlal edebilir. Onu nasıl kullandığınızdan ve
+geçerli tüm şartlara ve yasalara uymaktan siz sorumlusunuz. Yazarlar
+kötüye kullanım için hiçbir sorumluluk kabul etmez.
 
 ## 📄 Lisans
 

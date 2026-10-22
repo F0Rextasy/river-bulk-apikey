@@ -12,7 +12,7 @@
 [![OpenAI compatible](https://img.shields.io/badge/API-OpenAI--compatible-412991.svg?style=for-the-badge&logo=openai&logoColor=white)](https://docs.river.ai/guides/inference)
 [![9Router](https://img.shields.io/badge/9Router-connector-8B5CF6.svg?style=for-the-badge)](#-connect-to-9router)
 [![OmniRoute](https://img.shields.io/badge/OmniRoute-connector-8B5CF6.svg?style=for-the-badge)](#-connect-to-omniroute)
-[![Browsers](https://img.shields.io/badge/Browser-Chrome%20%2F%20Chromium-4285F4.svg?style=for-the-badge&logo=googlechrome&logoColor=white)](#-install)
+[![Browsers](https://img.shields.io/badge/Browser-Chrome%20%2F%20Chromium-4285F4.svg?style=for-the-badge&logo=googlechrome&logoColor=white)]
 [![Languages](https://img.shields.io/badge/i18n-10%20languages-F59E0B.svg?style=for-the-badge)](#-phone-verification-sms)
 
 **English** · [Türkçe](i18n/README.tr.md) · [简体中文](i18n/README.zh.md) · [日本語](i18n/README.ja.md) · [한국어](i18n/README.ko.md) · [Español](i18n/README.es.md) · [Français](i18n/README.fr.md) · [Deutsch](i18n/README.de.md) · [Русский](i18n/README.ru.md) · [Português](i18n/README.pt.md) · [Bahasa Indonesia](i18n/README.id.md)
@@ -30,13 +30,14 @@
 ## ✨ Funktionen
 
 - 🔑 **Massenhaft Konten + API-Schlüssel erstellen** — ein River-Konto *und* ein `rv_…`-Schlüssel pro Durchlauf.
-- 🧼 **Vollständig isolierte Sitzungen** — jedes Konto läuft in seinem eigenen CDP-Browser-Kontext, sodass keine Cookies oder `localStorage` zwischen Konten durchsickern.
-- 🪶 **Keine Abhängigkeiten** — ein handgeschriebener RFC6455-WebSocket- + CDP-Client. Kein `npm install`.
-- 🤖 **Registrierung im echten Browser** — die gehostete AuthKit-Seite wird in einem echten Chrome/Chromium auf deiner eigenen Maschine oder deinem VPS gesteuert.
+- 🧼 **Vollständig isolierte Sitzungen** — jedes Konto läuft in seinem eigenen CDP-Browserkontext, sodass keine Cookies oder `localStorage` zwischen Konten durchsickern.
+- 🪶 **Keine Abhängigkeiten** — ein selbstgebauter RFC6455-WebSocket- + CDP-Client. Kein `npm install`.
+- 🤖 **Anmeldung im echten Browser** — die gehostete AuthKit-Seite wird in einem echten Chrome/Chromium auf deiner eigenen Maschine oder einem VPS gesteuert.
 - 📧 **Wegwerf-Postfächer** — Verifizierungscodes werden direkt von [mail.tm](https://mail.tm) gelesen.
-- 📱 **Telefon-Hürde gelöst** — WorkOS Radars Telefonschritt auf einer privaten 5sim-Nummer (≈$0,07, Stornierung/Rückerstattung integriert) oder einer kostenlosen geteilten.
+- 📱 **Telefon-Hürde gelöst** — WorkOS Radars Telefonschritt über eine private 5sim-Nummer (≈$0,07, Kündigung/Rückerstattung integriert) oder eine kostenlose geteilte Nummer.
 - 📦 **Exporte** — JSON, CSV und eine Klartext-Schlüsselliste (ein `rv_…` pro Zeile).
-- 🌐 **Proxy-Rotation** — eine Ausgangsadresse pro Konto: der Browser *und* die API-Aufrufe laufen über den Proxy, und ein toter Proxy lässt dieses Konto fehlschlagen, statt deine IP preiszugeben.- 🔌 **9Router-Konnektor** — stelle deine River-Schlüssel mit einem Befehl als OpenAI-kompatiblen Anbieter in [9Router](https://9router.com) bereit.
+- 🌐 **Proxy-Rotation** — eine Ausgangsadresse pro Konto: sowohl der Browser *als auch* die API-Aufrufe laufen über den Proxy, und ein toter Proxy lässt dieses Konto fehlschlagen, statt deine IP preiszugeben.
+- 🔌 **9Router-Konnektor** — stelle deine River-Schlüssel mit einem Befehl als OpenAI-kompatiblen Anbieter in [9Router](https://9router.com) bereit.
 - 🌍 **11 Sprachen** — EN, TR, ZH, JA, KO, ES, FR, DE, RU, PT, ID.
 
 ## 🚀 Schnellstart
@@ -92,10 +93,9 @@ connected to browser · minting 3 account(s), concurrency 1
 
 ## 🧭 Wie es funktioniert
 
-Rivers Console meldet Benutzer über einen **gehosteten Browser-Ablauf** (WorkOS AuthKit) an, und die eigene REST-API basiert auf Bearer-Tokens, sodass es keine skriptfähige HTTP-Registrierung gibt. `river-bulk` steuert daher die echte gehostete UI in einem Browser, erfasst das Sitzungs-Bearer-Token und spricht dann mit der eigenen API der Console:
+Rivers Console meldet Benutzer über einen **gehosteten Browser-Ablauf** (WorkOS AuthKit) an, und die eigene REST-API basiert auf Bearer-Tokens, sodass es keine skriptbare HTTP-Anmeldung gibt. `river-bulk` steuert daher die echte gehostete UI in einem Browser, erfasst das Sitzungs-Bearer-Token und spricht dann mit der API der Console selbst:
 
-> **Achtung:** Rivers Registrierung verlangt derzeit eine Telefonverifizierung, sobald sie ein paar
-> Registrierungen gesehen hat, und das Tool stoppt an diesem Schritt, wenn er erscheint — generiere in kleinen Chargen.
+> **Achtung:** Rivers Anmeldung verlangt derzeit eine Telefonverifizierung, sobald sie ein paar Anmeldungen gesehen hat, und das Tool stoppt an diesem Schritt, wenn er erscheint — generiere in kleinen Stapeln.
 ```
 mail.tm inbox ──▶ sign-up UI ──▶ e-mail code ──▶ console (bearer token captured)
                                                       │
@@ -107,8 +107,8 @@ mail.tm inbox ──▶ sign-up UI ──▶ e-mail code ──▶ console (bear
                                     https://api.river.ai/v1  (OpenAI-compatible)
 ```
 
-> **Achtung:** Rivers Registrierung verlangt derzeit eine Telefonverifizierung, sobald sie ein paar
-> Registrierungen gesehen hat, und das Tool stoppt an diesem Schritt, wenn er erscheint — generiere in kleinen Chargen.
+> **Achtung:** Rivers Anmeldung verlangt derzeit eine Telefonverifizierung, sobald sie ein paar
+> Anmeldungen gesehen hat, und das Tool stoppt an diesem Schritt, wenn er erscheint — generiere in kleinen Stapeln.
 
 Vollständige Aufschlüsselung: [`docs/PROTOCOL.md`](docs/PROTOCOL.md).
 
@@ -143,7 +143,7 @@ Richte das Tool dann darauf aus:
 
 ## 🌐 Proxys
 
-Jedes Konto erhält seine eigene Ausgangsadresse: Der Browser-Kontext wird mit einem Proxy pro Kontext erstellt, und jeder Console-API-Aufruf wird über einen abhängigkeitsfreien CONNECT-/SOCKS-Tunnel an denselben Proxy gebunden. Ein Konto vermischt niemals Adressen, und ein defekter Proxy lässt dieses Konto fehlschlagen, statt deine IP preiszugeben — es gibt keinen direkten Fallback.
+Jedes Konto erhält seine eigene Ausgangsadresse: Der Browserkontext wird mit einem Proxy pro Kontext erstellt, und jeder Console-API-Aufruf wird über einen abhängigkeitsfreien CONNECT-/SOCKS-Tunnel an denselben Proxy gebunden. Ein Konto vermischt niemals Adressen, und ein defekter Proxy lässt dieses Konto fehlschlagen, statt deine IP preiszugeben — es gibt keinen direkten Fallback.
 
 ### Deine eigene Adresse — der eine Wert, den die Egress-Prüfung braucht
 
@@ -151,11 +151,11 @@ Die Vorabprüfung verwirft jeden Proxy, dessen Ausgangsadresse *deine* ist, also
 
 | Quelle | Wie sie ermittelt wird | Wissenswertes |
 | --- | --- | --- |
-| `--own-ip <address>` / `OWN_IP` | du gibst sie an | nichts wird irgendwohin gesendet — aber ein **veralteter Wert deaktiviert den Filter stillschweigend**, weil ein transparenter Proxy dann mit einer Adresse übereinstimmt, die nicht mehr deine ist |
-| `--own-ip auto` | der Router, über UPnP (nur LAN) | nutzlos hinter **Carrier-Grade-NAT**, wo die WAN-Adresse des Routers nicht die Adresse ist, die das Internet sieht — eine solche Antwort wird abgelehnt statt vertraut |
+| `--own-ip <address>` / `OWN_IP` | du gibst sie an | nichts wird irgendwohin gesendet — aber ein **veralteter Wert deaktiviert den Filter stillschweigend**, weil ein transparenter Proxy dann auf eine Adresse passt, die nicht mehr deine ist |
+| `--own-ip auto` | der Router, über UPnP (nur LAN) | nutzlos hinter **Carrier-Grade NAT**, wo die WAN-Adresse des Routers nicht die Adresse ist, die das Internet sieht — eine solche Antwort wird abgelehnt statt vertraut |
 | `--allow-direct-lookup` | eine HTTPS-Anfrage von dieser Maschine an einen Echo-Dienst | immer aktuell, und die einzige Quelle, die selbst von deiner eigenen Adresse ausgeht |
 
-Das Tool gibt die verwendete Adresse bei jedem Durchlauf aus; aktualisiere `--own-ip` pro Sitzung (gib sie auf einem Telefon aus, das nicht in diesem LAN ist, lies sie aus einem Anbieter-Panel ab, oder lass `--allow-direct-lookup` sie abrufen).
+Das Tool gibt die verwendete Adresse bei jedem Durchlauf aus; aktualisiere `--own-ip` pro Sitzung (gib sie auf einem Telefon aus, das nicht in diesem LAN ist, lies sie aus einem Anbieter-Panel aus, oder lass `--allow-direct-lookup` sie abrufen).
 
 ```bash
 node src/cli.js --count 10 --proxies proxies.txt
@@ -173,11 +173,11 @@ socks5://10.0.0.3:1080
 
 | Verhalten | Detail |
 | --- | --- |
-| Keine Liste | Der Durchlauf wird verweigert. `--allow-direct` ist das ausdrückliche Opt-in zum Generieren von deiner eigenen IP. |
-| Vorabprüfung | Einträge werden mit einem *verifizierten* TLS-Handshake zum Registrierungshost geprüft, bis genug für `--count` am Leben sind (`--no-probe`, `--probe-limit <n>`). Ein Proxy, der TLS selbst terminiert, wird hier abgelehnt, bevor er ein Konto verbrennen kann. |
+| Keine Liste | Der Durchlauf wird abgelehnt. `--allow-direct` ist das ausdrückliche Opt-in zum Generieren von deiner eigenen IP. |
+| Vorabprüfung | Einträge werden mit einem *verifizierten* TLS-Handshake zum Anmeldehost geprüft, bis genug für `--count` am Leben sind (`--no-probe`, `--probe-limit <n>`). Ein Proxy, der TLS selbst terminiert, wird hier abgelehnt, bevor er ein Konto verbrennen kann. |
 | Rotation | Funktionierende Proxys werden reihum zugewiesen, einer pro Konto. |
 | Egress-Prüfung | Jeder überlebende Proxy wird gefragt, welche Ausgangsadresse er präsentiert, und einer, der mit **deiner eigenen** Adresse antwortet (ein transparenter Proxy), wird verworfen. Deine eigene Adresse stammt aus `--own-ip <address>` / `OWN_IP` oder vom Router über UPnP (`--own-ip auto`, nur LAN, nichts verlässt die Maschine). Wenn keines von beiden verfügbar ist, stoppt der Durchlauf — eine direkte Echo-Dienst-Abfrage erfolgt nur mit `--allow-direct-lookup` (`--no-verify-egress` überspringt die Prüfung vollständig). **Ein veraltetes `--own-ip` deaktiviert diesen Filter stillschweigend**, also aktualisiere es, wann immer sich deine ISP-Adresse geändert haben könnte. |
-| Loopback-Einträge | `127.0.0.1`, LAN- und Link-Local-Einträge werden verworfen — ein Proxy dort leitet direkt aus deiner eigenen Verbindung weiter (`--allow-local-proxies` aktiviert sie für Tests wieder). |
+| Loopback-Einträge | `127.0.0.1`, LAN- und Link-Local-Einträge werden verworfen — ein Proxy dort leitet direkt aus deiner eigenen Verbindung weiter (`--allow-local-proxies` aktiviert sie zum Testen wieder). |
 | Authentifizierte Proxys | Chrome ignoriert `user:pass@` innerhalb einer Proxy-URL, daher werden Anmeldedaten stattdessen über `Fetch.handleAuthRequests` (`proxyUsername`/`proxyPassword`) beantwortet. |
 | SOCKS mit Anmeldedaten | Mit einer Warnung verworfen — Chrome kann sich nicht bei SOCKS-Proxys authentifizieren. |
 | Cache | Pro Konto deaktiviert: Chromes Festplatten-Cache wird zwischen Kontexten geteilt, sodass ein zwischengespeichertes Dokument den Proxy des Kontos vollständig umgehen würde. |
@@ -185,11 +185,11 @@ socks5://10.0.0.3:1080
 
 ### Was eine kostenlose Proxy-Liste tatsächlich wert ist
 
-Kostenlose Listen sind flüchtig — erwarte Minuten später einen anderen Satz von Überlebenden — und erwarte, dass die Überlebenden der kompromittierte Router von jemand anderem sind: Unabhängige Messungen beziffern etwa 10 % der funktionierenden kostenlosen Proxys als rundweg bösartig, TLS-Interception eingeschlossen ([NDSS'24 Open-Proxy-Studie](https://arxiv.org/html/2403.02445v1)). Ein Proxy sieht alles, was durch ihn gesendet wird — einschließlich des Bearer-Tokens, das dieses Tool erfasst. Die integrierte Vorabprüfung ist absichtlich streng; ein bezahlter oder selbst gehosteter Ausgang ist die sicherere Wahl für alles, was dir wichtig ist.
+Kostenlose Listen sind flüchtig — rechne Minuten später mit einer anderen Menge an Überlebenden — und rechne damit, dass die Überlebenden der kompromittierte Router von jemand anderem sind: unabhängige Messungen beziffern etwa 10 % der funktionierenden kostenlosen Proxys als rundweg bösartig, TLS-Interception eingeschlossen ([NDSS'24-Studie zu offenen Proxys](https://arxiv.org/html/2403.02445v1)). Ein Proxy sieht alles, was durch ihn gesendet wird — einschließlich des Bearer-Tokens, das dieses Tool erfasst. Die eingebaute Vorabprüfung ist bewusst streng; ein bezahlter oder selbst gehosteter Ausgang ist die sicherere Wahl für alles, was dir wichtig ist.
 
 ## 📬 Postfächer
 
-Die Registrierung lehnt bekannte Wegwerf-Postfach-Domains ab, also wähle ein Backend, dessen Domain sie akzeptiert — **`mailtrap` ist dasjenige, das heute von Anfang bis Ende generiert**, und `imap` mit einem Postfach, das dir bereits gehört, funktioniert ebenfalls.
+Die Anmeldung lehnt bekannte Wegwerf-Postfach-Domains ab, also wähle ein Backend, dessen Domain sie akzeptiert — **`mailtrap` ist dasjenige, das heute von Anfang bis Ende generiert**, und `imap` mit einem Postfach, das dir bereits gehört, funktioniert ebenfalls.
 
 | `--mailbox` | Postfach | Benötigt |
 | --- | --- | --- |
@@ -198,10 +198,10 @@ Die Registrierung lehnt bekannte Wegwerf-Postfach-Domains ab, also wähle ein Ba
 | `guerrilla` | Guerrilla Mail (`api.guerrillamail.com`) | nichts |
 | `inboxes` | Inboxes.com — achtzehn Domains auf einer öffentlichen JSON-API | nichts |
 | `tempmailio` | temp-mail.io — ein rotierender Domain-Pool, JSON-API | nichts |
-| `tempmailorg` | temp-mail.org — ein rotierender Domain-Pool | eine API-Sitzung, die aus einem **headed** Browser entnommen wurde (das Backend schlägt ohne eine laut fehl) |
+| `tempmailorg` | temp-mail.org — ein rotierender Domain-Pool | eine API-Sitzung, die aus einem **sichtbaren** Browser entnommen wurde (das Backend schlägt ohne eine lautstark fehl) |
 | `mailtrap` | **Mailtrap Inbound — ein frisches Postfach pro Konto auf `inbound-mailtrap.io`** | ein Mailtrap-API-Token (`MAILTRAP_TOKEN`, `--mailtrap-token-file` oder `%USERPROFILE%\.river-mailtrap-token`) |
 
-`--mail-domain <domain>` zwingt das Backend, weiterhin Adressen zu generieren, bis der Pool genau diese Domain liefert.
+`--mail-domain <domain>` zwingt das Backend, weiter Adressen zu generieren, bis der Pool genau diese Domain liefert.
 
 ```bash
 # one account through a fresh mailbox; add --allow-direct to run from your own IP
@@ -220,33 +220,33 @@ node src/cli.js --count 1 --allow-direct \
 
 `--mailbox imap` warnt, wenn die Passwortdatei innerhalb des Repositorys liegt, und `.gitignore` deckt bereits `.river-imap-pass`, `*-imap-pass` und `outputs/` ab — die exportierten Schlüssel landen in `outputs/` und dürfen niemals committet werden.
 
-Der IMAP-Client (`src/imap.js`) ist abhängigkeitsfrei, spricht über den Proxy-Tunnel des Kontos, wenn einer im Spiel ist, und markiert Nachrichten niemals als gelesen. Gmail benötigt 2-Schritt-Verifizierung für ein App-Passwort; Outlook, Fastmail und ein Postfach auf deiner eigenen Domain funktionieren genauso. `--mail-domain` überschreibt, auf welcher Domain die Aliase generiert werden (Standard: die Domain von `IMAP_USER`).
+Der IMAP-Client (`src/imap.js`) ist abhängigkeitsfrei, spricht durch den Proxy-Tunnel des Kontos, wenn einer im Spiel ist, und markiert Nachrichten nie als gelesen. Gmail benötigt eine 2-Schritt-Verifizierung für ein App-Passwort; Outlook, Fastmail und ein Postfach auf deiner eigenen Domain funktionieren genauso. `--mail-domain` überschreibt, auf welcher Domain die Aliase generiert werden (Standard: die Domain von `IMAP_USER`).
 
 ## 📱 Telefonverifizierung (SMS)
 
-River meldet Benutzer über den gehosteten WorkOS-AuthKit-Ablauf an, dessen **Radar**-Risiko-Engine *pro Ausgang* entscheidet, ob eine Telefonnummer erforderlich ist. Die meisten Durchläufe sehen diesen Bildschirm nie; ein Durchlauf, dessen Ausgang für Radar neu aussieht, erhält direkt nach dem E-Mail-Code einen `/radar-challenge/send`-Schritt. Wenn er erscheint, verlangt er eine **echte Mobilfunknummer** — der Code kommt über Prelude (Absender `Ding`, ~2 s) — und er lehnt eine Nummer ab, die bereits ein Konto verifiziert hat (`This phone number is not available.`).
+River meldet Benutzer über den gehosteten WorkOS-AuthKit-Ablauf an, dessen **Radar**-Risikomodul *pro Ausgang* entscheidet, ob eine Telefonnummer erforderlich ist. Die meisten Durchläufe sehen diesen Bildschirm nie; ein Durchlauf, dessen Ausgang für Radar neu aussieht, bekommt direkt nach dem E-Mail-Code einen `/radar-challenge/send`-Schritt. Wenn er erscheint, verlangt er eine **echte Mobilfunknummer** — der Code kommt über Prelude (Absender `Ding`, ~2 s) — und er lehnt eine Nummer ab, die bereits ein Konto verifiziert hat (`This phone number is not available.`).
 
 Die Nummer stammt aus einer *Rail*, gewählt mit `--sms`:
 
 | `--sms` | Rail | Kosten | Was es ist |
 | --- | --- | --- | --- |
 | `herofree` (Standard) | HeroSMS Free-Pool | **$0** | 2–3 geteilte UK/TH-Nummern mit einem 20-Minuten-Fenster; andere Leute lesen dasselbe Postfach, also ist ein Code ein Ratespiel, bis die Seite ihn akzeptiert |
-| `onlinesim` | OnlineSim Free-Liste | **$0** | ebenfalls geteilt — gemessen am 2026-10-19: Die Hürde lehnte OnlineSims LU-Leitung mit `This phone number can't be verified.` ab (die Klasse der virtuellen Nummern) |
+| `onlinesim` | OnlineSim Free-Liste | **$0** | ebenfalls geteilt — gemessen am 19.10.2026: Die Hürde lehnte OnlineSims LU-Leitung mit `This phone number can't be verified.` ab (die Klasse der virtuellen Nummern) |
 | `fivesim` | **5sim.net** | **≈$0,07** pro Nummer | eine private Aktivierung pro Konto, Code auf deiner eigenen Bestellung — die einzige Rail, die skaliert |
 | `--sms-cmd "<cmd>"` | dein Anbieter | dessen | jeder Befehl, der den Code ausgibt (siehe unten) |
 
-Die kostenlosen Pools sind *Test*-Rails: Sie beweisen, dass die Hürde lösbar ist und die Verkabelung funktioniert. Eine Farm braucht private Nummern, und die günstigste, die sich im Baum integrieren lässt, ist 5sim:
+Die kostenlosen Pools sind *Test*-Rails: Sie beweisen, dass die Hürde lösbar ist und die Verkabelung funktioniert. Eine Farm braucht private Nummern, und die günstigste, die im Baum integriert ist, ist 5sim:
 
 | Anbieter | GB `other` | US | günstigstes Land | Rückerstattung, wenn keine SMS | wie |
 | --- | --- | --- | --- | --- | --- |
-| **5sim.net** | **$0,07** | $0,49 | Kenia $0,0795 | `cancel`, und 5sim storniert automatisch nach ~5 min Stille | **integriert — `--sms fivesim`** |
+| **5sim.net** | **$0,07** | $0,49 | Kenia $0,0795 | `cancel`, und 5sim storniert automatisch nach ~5 min Stille | **eingebaut — `--sms fivesim`** |
 | Tiger SMS | $0,07 | $0,122 | Indonesien $0,03 · **NL $0,05** | sofort bei Cancel | sms-activate `handler_api` → `--sms-cmd` |
 | GrizzlySMS | $0,072 | $0,077 | **Indonesien $0,009** | automatisch, innerhalb von 20 min | `handler_api` → `--sms-cmd` |
 
 ### 5sim in drei Schritten
 
 1. **Token** — erstelle ein Konto bei [5sim.net](https://5sim.net), lade auf (Visa / Mastercard oder Krypto) und kopiere das API-Token von der Profilseite.
-2. **Exportiere es** — das Repo speichert das Token nie (`outputs/` und `.env` sind gitignoriert):
+2. **Exportiere es** — das Repo speichert das Token nie (`outputs/` und `.env` sind gitignored):
    ```bash
    export FIVESIM_TOKEN="…"          # PowerShell: $env:FIVESIM_TOKEN="…"
    ```
@@ -267,11 +267,11 @@ node src/sms.js finish --rail fivesim --phone +447…                    # the n
 node src/sms.js cancel --rail fivesim --phone +447…                    # no code → refund
 ```
 
-`--country` akzeptiert 5sims eigene Ländernamen (`england`, `usa`, `netherlands`, …) oder einen Alias (`gb`, `uk`, `us`, `nl`, `de`, `fr`, `id`, `ke`, …); `--operator any` lässt 5sim denjenigen Betreiber wählen, der Bestand hat; `--max-price 0.08` lehnt einen Pool ab, der mehr kostet, als du erlaubst. `pick` legt die Bestellung in `outputs/fivesim-orders.json` ab, sodass der spätere `code`-/`cancel`-/`finish`-Prozess sie findet, und ein `code`-Durchlauf, der in einen Timeout läuft, storniert die Bestellung von selbst für eine Rückerstattung (`--no-cancel` verzichtet darauf). `--phone <E164>` bindet eine Nummer, statt eine zu kaufen — eine Bestellung, die dir bereits auf 5sim gehört, oder eine gelistete Nummer auf einer kostenlosen Rail.
+`--country` akzeptiert 5sims eigene Ländernamen (`england`, `usa`, `netherlands`, …) oder einen Alias (`gb`, `uk`, `us`, `nl`, `de`, `fr`, `id`, `ke`, …); `--operator any` lässt 5sim denjenigen Betreiber wählen, der Bestand hat; `--max-price 0.08` lehnt einen Pool ab, der mehr kostet, als du erlaubst. `pick` parkt die Bestellung in `outputs/fivesim-orders.json`, damit der spätere `code`-/`cancel`-/`finish`-Prozess sie findet, und ein `code`-Durchlauf, der in ein Timeout läuft, storniert die Bestellung von selbst für eine Rückerstattung (`--no-cancel` verzichtet darauf). `--phone <E164>` legt eine Nummer fest, statt eine zu kaufen — eine Bestellung, die dir bereits auf 5sim gehört, oder eine gelistete Nummer auf einer kostenlosen Rail.
 
 ### Deinen eigenen Anbieter anbinden: `--sms-cmd`
 
-Jede Rail ist ein *Befehl*: Sie gibt den Code als ihre letzte nicht-leere stdout-Zeile aus und beendet sich mit einem Nicht-Null-Code, wenn sie keinen hat. Der Ablauf benötigt `--phone` damit und ersetzt `{phone}` (E.164) und `{since}` (ISO-Zeitstempel der Übermittlung — leer, wenn die Rail das Postfach selbst erfasst):
+Jede Rail ist ein *Befehl*: Sie gibt den Code als ihre letzte nicht-leere stdout-Zeile aus und beendet sich mit einem Nicht-Null-Code, wenn sie keinen hat. Der Ablauf benötigt `--phone` zusammen damit und ersetzt `{phone}` (E.164) und `{since}` (ISO-Zeitstempel des Absendens — leer, wenn die Rail das Postfach selbst erfasst):
 
 ```bash
 node src/mint-temptf.js --phone +447… \
@@ -289,7 +289,7 @@ So werden Tiger SMS / GrizzlySMS (`handler_api`) oder ein Postfach, das dir bere
 | 50 | $3,50 | $3,50 | $0,45 | — |
 | 250 | $17,50 | $17,50 | $2,25 | — |
 
-Die Preise bewegen sich mit den Pools (gemessen am 2026-10-19, `other`/generisches Produkt, das Produkt, das dieser Ablauf kauft). Kalkuliere *ohne* die Rückerstattung: Eine Bestellung, deren SMS bereits eingetroffen ist, wird berechnet, auch wenn du stornierst, also ist `cancel` eine Ersparnis, die es sich zu nehmen lohnt, keine Garantie.
+Die Preise bewegen sich mit den Pools (gemessen am 19.10.2026, `other`/generisches Produkt, das Produkt, das dieser Ablauf kauft). Kalkuliere *ohne* die Rückerstattung: Eine Bestellung, deren SMS bereits eingetroffen ist, wird berechnet, auch wenn du stornierst, also ist `cancel` eine Ersparnis, die man mitnehmen sollte, keine Garantie.
 
 ## 🧰 CLI-Referenz
 
@@ -321,7 +321,7 @@ node src/cli.js [options]
   -h, --help               show help
 ```
 
-`src/cli.js` behält die obigen Optionen — die Telefon-Hürde ist bewusst *keine* davon: `--sms`, `--sms-cmd` und `--phone` gehören zu den Mint-Abläufen in [📱 Telefonverifizierung (SMS)](#-phone-verification-sms) (`src/mint-temptf.js`, `src/mint-bulk.js`, `src/phone.js`, `src/sms.js`). Ein Durchlauf, dessen Ausgang Radars Telefonschritt auslöst und keine Rail mitbringt, stoppt dort mit einem `PHONE_GATE`-Fehler.
+`src/cli.js` behält die obigen Optionen — die Telefon-Hürde ist bewusst *keine* davon: `--sms`, `--sms-cmd` und `--phone` gehören zu den Mint-Abläufen in [📱 Telefonverifizierung (SMS)](#-phone-verification-sms) (`src/mint-temptf.js`, `src/mint-bulk.js`, `src/phone.js`, `src/sms.js`). Ein Durchlauf, dessen Ausgang Radars Telefonschritt auslöst und keine Rail mitführt, stoppt dort mit einem `PHONE_GATE`-Fehler.
 
 ### Bibliotheksnutzung
 
@@ -345,7 +345,8 @@ const models = await listModels(account.apiKey);
 cdp.close();
 ```
 
-`provisionAccount` wirft ohne einen `proxy` einen Fehler, genau wie die CLI: Ein Aufrufer, der sich von der eigenen Adresse der Maschine aus registrieren möchte, muss `allowDirect: true` angeben.## 🤖 Modelle & kostenlose Stufe
+`provisionAccount` wirft ohne einen `proxy` einen Fehler, genau wie die CLI: Ein Aufrufer, der sich von der eigenen Adresse der Maschine aus anmelden möchte, muss `allowDirect: true` angeben.
+## 🤖 Modelle & kostenlose Stufe
 
 Neue Konten können diese Modelle über `https://api.river.ai/v1` aufrufen (OpenAI-kompatibel). Beide unterstützen Text- **und** Bildeingabe, Streaming, Reasoning und Funktionsaufrufe.
 
@@ -354,9 +355,9 @@ Neue Konten können diese Modelle über `https://api.river.ai/v1` aufrufen (Open
 | `deepseek-ai/DeepSeek-V4.1-Flash` | $0,12 | $0,0024 | $0,48 | 1.048.576 | 384.000 |
 | `zai-org/GLM-5.3-Flash` | $0,12 | $0,024 | $0,40 | 1.048.576 | 128K |
 
-*Preise in USD pro Million Token. Reasoning-Token werden als Ausgabe abgerechnet.*
+*Preise in USD pro Million Tokens. Reasoning-Tokens werden als Ausgabe abgerechnet.*
 
-**Was ein frisches Konto erhält:** ein **$25-Guthaben** — das Tool liest `balanceUsd` für jedes Konto, das es erstellt, und zeichnet es im JSON/CSV-Export auf (`"balanceUsd": 25`), sodass das Guthaben pro Schlüssel sichtbar ist statt angenommen.
+**Was ein frisches Konto bekommt:** ein **$25-Guthaben** — das Tool liest `balanceUsd` für jedes Konto, das es erstellt, und zeichnet es im JSON/CSV-Export auf (`"balanceUsd": 25`), sodass das Guthaben pro Schlüssel sichtbar ist statt angenommen.
 
 **Wie man mehr bekommt:** Das Guthaben liegt beim **Konto** — ein Konto pro Schlüssel, und ein neues Konto ist ein neues Guthaben. `--count N` erstellt N Konten, jedes mit seinem eigenen `rv_…`-Schlüssel.
 
@@ -385,9 +386,9 @@ river/zai-org/GLM-5.3-Flash
 river/deepseek-ai/DeepSeek-V4.1-Flash
 ```
 
-Richte den Konnektor auf einen anderen Schlüssel, um Konten zu rotieren; die Modellliste bleibt dieselbe.
+Richte den Konnektor auf einen anderen Schlüssel, um Konten zu rotieren; die Modellliste bleibt gleich.
 
-`npm run 9router` führt dasselbe Modul aus, und `node src/launcher.js --connect-9router` geht die gesamte Schlüsselliste (`outputs/river-accounts.txt`) durch und registriert eine Verbindung pro Schlüssel — es fragt zuerst nach Basis-URL und Passwort.
+`npm run 9router` führt dasselbe Modul aus, und `node src/launcher.js --connect-9router` geht die ganze Schlüsselliste (`outputs/river-accounts.txt`) durch und registriert eine Verbindung pro Schlüssel — es fragt zuerst nach der Basis-URL und dem Passwort.
 
 ## 🔌 Mit OmniRoute verbinden
 
@@ -406,9 +407,10 @@ river/zai-org/GLM-5.3-Flash
 river/deepseek-ai/DeepSeek-V4.1-Flash
 ```
 
-Richte den Konnektor auf einen anderen Schlüssel, um Konten zu rotieren; die Modellliste bleibt dieselbe.
+Richte den Konnektor auf einen anderen Schlüssel, um Konten zu rotieren; die Modellliste bleibt gleich.
 
-`npm run omniroute` führt dasselbe Modul aus, und `node src/launcher.js --connect-omniroute` geht die gesamte Schlüsselliste (`outputs/river-accounts.txt`) durch und registriert eine Verbindung pro Schlüssel — es fragt zuerst nach Basis-URL und Passwort.## 📦 Ausgabeformat
+`npm run omniroute` führt dasselbe Modul aus, und `node src/launcher.js --connect-omniroute` geht die ganze Schlüsselliste (`outputs/river-accounts.txt`) durch und registriert eine Verbindung pro Schlüssel — es fragt zuerst nach der Basis-URL und dem Passwort.
+## 📦 Ausgabeformat
 
 `outputs/river-accounts.json`:
 
