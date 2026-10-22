@@ -266,7 +266,6 @@ async function provisionAccount(cdp, mail, opts = {}) {
   const browserContextId = await cdp.createBrowserContext({ proxyServer: proxy ? browserUrl(proxy) : undefined });
   const { targetId, sessionId } = await cdp.newPage({ browserContextId });
   await cdp.send('Page.enable', {}, sessionId);
-  await cdp.send('Runtime.enable', {}, sessionId);
   await cdp.send('Network.enable', {}, sessionId);
   // Chrome's disk cache is per profile, not per context: without this, account
   // #2 can be served account #1's bytes and never touch its own proxy.
