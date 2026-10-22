@@ -36,3 +36,7 @@ r.bin
 .probe-cf.js
 .screen-exits.js
 proxy-lab/
+
+# minted keys / run logs
+keys.txt
+run.log

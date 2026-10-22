@@ -228,7 +228,7 @@ node src/cli.js --count 1 --allow-direct --mailbox mailtrap \
 # das App-Passwort aus der Shell-Historie UND aus dem Repository-Checkout heraushalten
 printf '%s' 'abcd efgh ijkl mnop' > "$HOME/.river-imap-pass"     # %USERPROFILE% unter Windows
 node src/cli.js --count 1 --allow-direct \
-  --mailbox imap --imap-user you@gmail.com --imap-pass-file "$HOME/.river-imap-pass"
+  --mailbox imap --imap-user '<your-mail>' --imap-pass-file "$HOME/.river-imap-pass"
 # oder IMAP_USER / IMAP_PASS / IMAP_HOST exportieren (Standard: imap.gmail.com)
 ```
 
@@ -457,7 +457,7 @@ Verbindung pro Schlüssel – Basis-URL und Passwort werden vorab abgefragt.
       "status": "ok",
       "email": "z2cb…@maxxspace.com",
       "password": "…",
-      "apiKey": "rv_<redacted>",
+      "apiKey": "rv_…",
       "apiKeyId": "<api-key-id>",
       "keyName": "river-bulk-1",
       "balanceUsd": 25,

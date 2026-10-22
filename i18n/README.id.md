@@ -224,7 +224,7 @@ node src/cli.js --count 1 --allow-direct --mailbox mailtrap \
 # jaga agar kata sandi aplikasi tidak tercatat di riwayat shell DAN di luar checkout repositori
 printf '%s' 'abcd efgh ijkl mnop' > "$HOME/.river-imap-pass"     # %USERPROFILE% di Windows
 node src/cli.js --count 1 --allow-direct \
-  --mailbox imap --imap-user you@gmail.com --imap-pass-file "$HOME/.river-imap-pass"
+  --mailbox imap --imap-user '<your-mail>' --imap-pass-file "$HOME/.river-imap-pass"
 # atau ekspor IMAP_USER / IMAP_PASS / IMAP_HOST (default imap.gmail.com)
 ```
 
@@ -447,7 +447,7 @@ koneksi per kunci — perintah ini akan meminta URL dasar dan kata sandi terlebi
       "status": "ok",
       "email": "z2cb…@maxxspace.com",
       "password": "…",
-      "apiKey": "rv_<redacted>",
+      "apiKey": "rv_…",
       "apiKeyId": "<api-key-id>",
       "keyName": "river-bulk-1",
       "balanceUsd": 25,

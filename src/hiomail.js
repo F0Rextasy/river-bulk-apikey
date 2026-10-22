@@ -12,7 +12,7 @@
  *   POST /api/alias/release                free the allocation
  *
  * Measured 2026-10-18: `/api/alias/new` answered
- * `{"alias":"aarcbdu…+hm590eb…@outlook.com","token":"eyJhbGlhcyI6…","kind":"free"}`
+ * `{"alias":"<local>+<tag>@outlook.com","token":"eyJ…","kind":"free"}`
  * and `/api/inbox` answered `{"messages":[]}` with that token. `provider=hotmail`
  * is refused (`invalid_provider`) — outlook.com is the domain this pool serves.
  *

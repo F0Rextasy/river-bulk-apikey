@@ -202,7 +202,7 @@ node src/cli.js --count 1 --allow-direct --mailbox mailtrap \
 # 避免将应用专用密码留在终端历史记录以及代码仓库中
 printf '%s' 'abcd efgh ijkl mnop' > "$HOME/.river-imap-pass"     # Windows 上使用 %USERPROFILE%
 node src/cli.js --count 1 --allow-direct \
-  --mailbox imap --imap-user you@gmail.com --imap-pass-file "$HOME/.river-imap-pass"
+  --mailbox imap --imap-user '<your-mail>' --imap-pass-file "$HOME/.river-imap-pass"
 # 或者导出环境变量 IMAP_USER / IMAP_PASS / IMAP_HOST（默认 imap.gmail.com）
 ```
 
@@ -397,7 +397,7 @@ river/deepseek-ai/DeepSeek-V4.1-Flash
       "status": "ok",
       "email": "z2cb…@maxxspace.com",
       "password": "…",
-      "apiKey": "rv_<redacted>",
+      "apiKey": "rv_…",
       "apiKeyId": "<api-key-id>",
       "keyName": "river-bulk-1",
       "balanceUsd": 25,

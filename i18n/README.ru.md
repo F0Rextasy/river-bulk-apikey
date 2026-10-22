@@ -231,7 +231,7 @@ node src/cli.js --count 1 --allow-direct --mailbox mailtrap \
 # исключите попадание пароля приложения в историю оболочки И в репозиторий
 printf '%s' 'abcd efgh ijkl mnop' > "$HOME/.river-imap-pass"     # %USERPROFILE% в Windows
 node src/cli.js --count 1 --allow-direct \
-  --mailbox imap --imap-user you@gmail.com --imap-pass-file "$HOME/.river-imap-pass"
+  --mailbox imap --imap-user '<your-mail>' --imap-pass-file "$HOME/.river-imap-pass"
 # или экспортируйте IMAP_USER / IMAP_PASS / IMAP_HOST (по умолчанию imap.gmail.com)
 ```
 
@@ -465,7 +465,7 @@ river/deepseek-ai/DeepSeek-V4.1-Flash
       "status": "ok",
       "email": "z2cb…@maxxspace.com",
       "password": "…",
-      "apiKey": "rv_<redacted>",
+      "apiKey": "rv_…",
       "apiKeyId": "<api-key-id>",
       "keyName": "river-bulk-1",
       "balanceUsd": 25,

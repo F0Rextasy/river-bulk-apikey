@@ -230,7 +230,7 @@ node src/cli.js --count 1 --allow-direct --mailbox mailtrap \
 # uygulama parolasını kabuk geçmişinden VE depodan uzak tutun
 printf '%s' 'abcd efgh ijkl mnop' > "$HOME/.river-imap-pass"     # Windows'ta %USERPROFILE%
 node src/cli.js --count 1 --allow-direct \
-  --mailbox imap --imap-user you@gmail.com --imap-pass-file "$HOME/.river-imap-pass"
+  --mailbox imap --imap-user '<your-mail>' --imap-pass-file "$HOME/.river-imap-pass"
 # veya IMAP_USER / IMAP_PASS / IMAP_HOST değişkenlerini dışa aktarın (varsayılan imap.gmail.com)
 ```
 
@@ -433,7 +433,7 @@ kaydeder — önce temel URL'yi ve şifreyi sorar.
       "status": "ok",
       "email": "z2cb…@maxxspace.com",
       "password": "…",
-      "apiKey": "rv_<redacted>",
+      "apiKey": "rv_…",
       "apiKeyId": "<api-key-id>",
       "keyName": "river-bulk-1",
       "balanceUsd": 25,

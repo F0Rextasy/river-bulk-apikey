@@ -204,7 +204,7 @@ node src/cli.js --count 1 --allow-direct --mailbox mailtrap \
 # 앱 비밀번호를 셸 기록 및 체크아웃 저장소에 남지 않도록 보관
 printf '%s' 'abcd efgh ijkl mnop' > "$HOME/.river-imap-pass"     # Windows의 경우 %USERPROFILE%
 node src/cli.js --count 1 --allow-direct \
-  --mailbox imap --imap-user you@gmail.com --imap-pass-file "$HOME/.river-imap-pass"
+  --mailbox imap --imap-user '<your-mail>' --imap-pass-file "$HOME/.river-imap-pass"
 # 또는 IMAP_USER / IMAP_PASS / IMAP_HOST 내보내기(export) (기본값: imap.gmail.com)
 ```
 
@@ -417,7 +417,7 @@ river/deepseek-ai/DeepSeek-V4.1-Flash
       "status": "ok",
       "email": "z2cb…@maxxspace.com",
       "password": "…",
-      "apiKey": "rv_<redacted>",
+      "apiKey": "rv_…",
       "apiKeyId": "<api-key-id>",
       "keyName": "river-bulk-1",
       "balanceUsd": 25,

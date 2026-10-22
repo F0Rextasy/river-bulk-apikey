@@ -203,7 +203,7 @@ node src/cli.js --count 1 --allow-direct --mailbox mailtrap \
 # アプリパスワードをシェルの履歴やリポジトリのチェックアウトに含めないように保持
 printf '%s' 'abcd efgh ijkl mnop' > "$HOME/.river-imap-pass"     # Windows の場合は %USERPROFILE%
 node src/cli.js --count 1 --allow-direct \
-  --mailbox imap --imap-user you@gmail.com --imap-pass-file "$HOME/.river-imap-pass"
+  --mailbox imap --imap-user '<your-mail>' --imap-pass-file "$HOME/.river-imap-pass"
 # または IMAP_USER / IMAP_PASS / IMAP_HOST（デフォルト: imap.gmail.com）をエクスポート
 ```
 
@@ -392,7 +392,7 @@ river/deepseek-ai/DeepSeek-V4.1-Flash
       "status": "ok",
       "email": "z2cb…@maxxspace.com",
       "password": "…",
-      "apiKey": "rv_<redacted>",
+      "apiKey": "rv_…",
       "apiKeyId": "<api-key-id>",
       "keyName": "river-bulk-1",
       "balanceUsd": 25,

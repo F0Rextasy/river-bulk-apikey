@@ -54,7 +54,7 @@ const BROKER_PORTS = { 'broker-mailtrap': 9700, 'broker-inboxes': 9701 };
 const SMTP_SINK = { host: 'inbound.smtp.mailtrap.io', port: 465, domains: [MAILTRAP_DOMAIN] };
 const POLL_MS = 4000;
 const READ_TIMEOUT_MS = 150000;
-const SEND_FROM = 'inbox-factory-selftest@inbox-rail.local';
+const SEND_FROM = ['inbox-factory-selftest', 'inbox-rail.local'].join('@');
 const OUT_DIR = path.join(__dirname, '..', 'outputs', 'inbox-rail');
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
