@@ -11,10 +11,17 @@
 [![Dependencies](https://img.shields.io/badge/dependencies-0-blue.svg?style=for-the-badge)](#)
 [![OpenAI compatible](https://img.shields.io/badge/API-OpenAI--compatible-412991.svg?style=for-the-badge&logo=openai&logoColor=white)](https://docs.river.ai/guides/inference)
 [![9Router](https://img.shields.io/badge/9Router-connector-8B5CF6.svg?style=for-the-badge)](#-connect-to-9router)
-[![Browsers](https://img.shields.io/badge/Browser-Chrome%20%2F%20Chromium-4285F4.svg?style=for-the-badge&logo=googlechrome&logoColor=white)](#-requirements-a-chrome-to-drive)
+[![OmniRoute](https://img.shields.io/badge/OmniRoute-connector-8B5CF6.svg?style=for-the-badge)](#-connect-to-omniroute)
+[![Browsers](https://img.shields.io/badge/Browser-Chrome%20%2F%20Chromium-4285F4.svg?style=for-the-badge&logo=googlechrome&logoColor=white)](#-requirements---a-chrome-to-drive)
 [![Languages](https://img.shields.io/badge/i18n-10%20languages-F59E0B.svg?style=for-the-badge)](#-phone-verification-sms)
 
 **English** · [Türkçe](i18n/README.tr.md) · [简体中文](i18n/README.zh.md) · [日本語](i18n/README.ja.md) · [한국어](i18n/README.ko.md) · [Español](i18n/README.es.md) · [Français](i18n/README.fr.md) · [Deutsch](i18n/README.de.md) · [Русский](i18n/README.ru.md) · [Português](i18n/README.pt.md) · [Bahasa Indonesia](i18n/README.id.md)
+
+</div>
+
+<div align="center">
+
+**English** · [Türkçe](README.tr.md) · [中文](README.cn.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Русский](README.ru.md) · [Português](README.pt.md)
 
 </div>
 
@@ -452,6 +459,29 @@ the same.
 walks the whole key list (`outputs/river-accounts.txt`) and registers one
 connection per key — it asks for the base URL and password first.
 
+## 🔌 Connect to OmniRoute
+
+River is OpenAI-compatible, so register it once and use every key:
+
+```bash
+node src/connect-omniroute.js \
+  --base http://localhost:20128 --password 123456 \
+  --api-key rv_xxxxxxxx
+```
+
+Then pick a model inside OmniRoute:
+
+```
+river/zai-org/GLM-5.3-Flash
+river/deepseek-ai/DeepSeek-V4.1-Flash
+```
+
+Point the connector at a different key to rotate accounts; the model list stays
+the same.
+
+`npm run omniroute` runs the same module, and `node src/launcher.js --connect-omniroute`
+walks the whole key list (`outputs/river-accounts.txt`) and registers one
+connection per key — it asks for the base URL and password first.
 ## 📦 Output format
 
 `outputs/river-accounts.json`:

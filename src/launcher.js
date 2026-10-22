@@ -13,6 +13,7 @@
  * Usage: node src/launcher.js            (menu)
  *        node src/launcher.js --help
  *        node src/launcher.js --connect-9router
+node src/launcher.js --connect-omniroute
  */
 
 const fs = require('fs');
@@ -202,12 +203,19 @@ async function main() {
     rl.close();
     return;
   }
+
+  if (process.argv.includes('--connect-omniroute')) {
+    await omniRouter(cfg);
+    rl.close();
+    return;
+  }
   banner();
   console.log('  1) Mint keys      — one account per key, its own browser context and proxy exit');
   console.log('  2) Key list       — show the keys already minted (one per line)');
   console.log('  3) Settings       — show what this launcher remembers');
   console.log('  4) Help           — CLI options and notes');
   console.log('  5) Connect to 9Router — register the keys in the key list with a local 9Router');
+console.log('  6) Connect to OmniRoute — register the keys in the key list with a local OmniRoute');
   console.log('  q) Quit\n');
   const choice = (await ask('Choose', '1')).toLowerCase();
 
@@ -219,6 +227,7 @@ async function main() {
   } else if (choice === '3') console.log('\n' + JSON.stringify(cfg, null, 2));
   else if (choice === '4') run(['--help']);
   else if (choice === '5') await nineRouter(cfg);
+  else if (choice === '6') await omniRouter(cfg);
   rl.close();
 }
 
